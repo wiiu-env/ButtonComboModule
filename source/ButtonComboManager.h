@@ -10,6 +10,7 @@
 #include <vector>
 
 #include <cstdint>
+#include <forward_list>
 
 
 class ButtonComboManager {
@@ -56,7 +57,7 @@ public:
     ButtonComboModule_Error DetectButtonCombo_Blocking(const ButtonComboModule_DetectButtonComboOptions &options, ButtonComboModule_Buttons &outButtonCombo);
 
 private:
-    std::vector<std::shared_ptr<ButtonComboInfoIF>> mCombos;
+    std::forward_list<std::shared_ptr<ButtonComboInfoIF>> mCombos;
     std::vector<uint32_t> mVPADButtonBuffer;
     std::mutex mMutex;
 };
