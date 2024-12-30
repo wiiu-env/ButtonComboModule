@@ -12,15 +12,16 @@
 #include <vector>
 
 namespace {
-    template<typename T, class Allocator, class Predicate>
-    bool remove_first_if(std::vector<T, Allocator> &list, Predicate pred) {
-        auto it = list.begin();
-        while (it != list.end()) {
-            if (pred(*it)) {
-                list.erase(it);
+    template<typename Container, typename Predicate>
+    std::enable_if_t<std::is_same_v<Container, std::forward_list<typename Container::value_type>>, bool>
+    remove_first_if(Container &container, Predicate pred) {
+        auto it = container.before_begin();
+
+        for (auto prev = it, current = ++it; current != container.end(); ++prev, ++current) {
+            if (pred(*current)) {
+                container.erase_after(prev);
                 return true;
             }
-            ++it;
         }
 
         return false;
@@ -345,7 +346,7 @@ void ButtonComboManager::AddCombo(std::shared_ptr<ButtonComboInfoIF> newComboInf
     outStatus = CheckComboStatus(*newComboInfo);
     newComboInfo->setStatus(outStatus);
     outHandle = newComboInfo->getHandle();
-    mCombos.push_back(std::move(newComboInfo));
+    mCombos.emplace_front(std::move(newComboInfo));
 
     const auto block = hasActiveComboWithTVButton();
     VPADSetTVMenuInvalid(VPAD_CHAN_0, block);
