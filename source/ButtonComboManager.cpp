@@ -505,7 +505,6 @@ ButtonComboModule_Error ButtonComboManager::UpdateControllerMask(const ButtonCom
     comboInfo->setControllerMask(controllerMask);
 
     // check if we have a conflict.
-    comboInfo->setControllerMask(controllerMask);
     comboInfo->setStatus(CheckComboStatus(*comboInfo));
     outComboStatus = comboInfo->getStatus();
 
