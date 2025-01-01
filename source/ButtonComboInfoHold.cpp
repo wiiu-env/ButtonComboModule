@@ -99,5 +99,5 @@ ButtonComboModule_Error ButtonComboInfoHold::setHoldDuration(const uint32_t hold
 ButtonComboModule_ButtonComboInfoEx ButtonComboInfoHold::getComboInfoEx() const {
     return {.type                   = mIsObserver ? BUTTON_COMBO_MODULE_TYPE_HOLD_OBSERVER : BUTTON_COMBO_MODULE_TYPE_HOLD,
             .basicCombo             = {.controllerMask = mControllerMask, .combo = mCombo},
-            .optionalHoldForXFrames = 0};
+            .optionalHoldForXFrames = mTargetDurationInMs};
 }
