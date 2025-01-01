@@ -65,7 +65,7 @@ void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes co
         return;
     }
     const auto chanIndex = controllerTypeToChanIndex(controller);
-    if (chanIndex < 0 || static_cast<uint32_t>(chanIndex) >= pressedButtons.size()) {
+    if (chanIndex < 0 || static_cast<uint32_t>(chanIndex) >= std::size(mHoldInformation)) {
         DEBUG_FUNCTION_LINE_WARN("ChanIndex is out of bounds %d", chanIndex);
         return;
     }
