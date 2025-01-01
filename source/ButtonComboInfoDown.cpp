@@ -32,8 +32,8 @@ void ButtonComboInfoDown::UpdateInput(
 
         if (buttonsPressedChanged && buttonsPressedMatchCombo && !prevButtonsIncludedCombo) {
             if (mCallback != nullptr) {
-                mCallback(getHandle(), mContext);
-                DEBUG_FUNCTION_LINE("Calling callback [%08X](%08X) for \"%s\" [handle: %08X], pressed down %08X", mCallback, mContext, mLabel.c_str(), getHandle().handle, mCombo);
+                DEBUG_FUNCTION_LINE("Calling callback [%08X](controller: %08X, context: %08X) for \"%s\" [handle: %08X], pressed down %08X", mCallback, controller, mContext, mLabel.c_str(), getHandle().handle, mCombo);
+                mCallback(controller, getHandle(), mContext);
             } else {
                 DEBUG_FUNCTION_LINE_WARN("Callback was null for combo %08X", getHandle());
             }
@@ -47,7 +47,7 @@ ButtonComboModule_Error ButtonComboInfoDown::setHoldDuration(uint32_t) {
 }
 
 ButtonComboModule_ButtonComboInfoEx ButtonComboInfoDown::getComboInfoEx() const {
-    return {.type                   = mIsObserver ? BUTTON_COMBO_MODULE_TYPE_PRESS_DOWN_OBSERVER : BUTTON_COMBO_MODULE_TYPE_PRESS_DOWN,
-            .basicCombo             = {.controllerMask = mControllerMask, .combo = mCombo},
-            .optionalHoldForXFrames = 0};
+    return {.type               = mIsObserver ? BUTTON_COMBO_MODULE_TYPE_PRESS_DOWN_OBSERVER : BUTTON_COMBO_MODULE_TYPE_PRESS_DOWN,
+            .basicCombo         = {.controllerMask = mControllerMask, .combo = mCombo},
+            .optionalHoldForXMs = 0};
 }
