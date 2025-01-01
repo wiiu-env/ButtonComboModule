@@ -19,7 +19,7 @@ public:
 
     static std::optional<std::shared_ptr<ButtonComboInfoIF>> CreateComboInfo(const ButtonComboModule_ComboOptions &options, ButtonComboModule_Error &err);
 
-    ButtonComboInfoIF *GetComboInfoForHandle(ButtonComboModule_ComboHandle handle);
+    ButtonComboInfoIF *GetComboInfoForHandle(ButtonComboModule_ComboHandle handle) const;
 
     void UpdateInputVPAD(VPADChan chan, const VPADStatus *buffer, uint32_t bufferSize, const VPADReadError *error);
 
