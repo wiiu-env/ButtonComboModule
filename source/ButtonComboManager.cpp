@@ -359,6 +359,7 @@ ButtonComboModule_Error ButtonComboManager::RemoveCombo(ButtonComboModule_ComboH
         DEBUG_FUNCTION_LINE_WARN("Failed to remove combo by handle %08X", handle);
     } else {
         const auto block = hasActiveComboWithTVButton();
+
         VPADSetTVMenuInvalid(VPAD_CHAN_0, block);
         VPADSetTVMenuInvalid(VPAD_CHAN_1, block);
     }
@@ -459,7 +460,7 @@ void ButtonComboManager::UpdateInputWPAD(const WPADChan chan, WPADStatus *data) 
     }
 }
 
-ButtonComboInfoIF *ButtonComboManager::GetComboInfoForHandle(const ButtonComboModule_ComboHandle handle) {
+ButtonComboInfoIF *ButtonComboManager::GetComboInfoForHandle(const ButtonComboModule_ComboHandle handle) const {
     for (const auto &combo : mCombos) {
         if (combo->getHandle() == handle) {
             return combo.get();
@@ -559,7 +560,7 @@ ButtonComboModule_Error ButtonComboManager::GetButtonComboMeta(const ButtonCombo
 ButtonComboModule_Error ButtonComboManager::GetButtonComboCallback(const ButtonComboModule_ComboHandle handle,
                                                                    ButtonComboModule_CallbackOptions &outOptions) {
     std::lock_guard lock(mMutex);
-    auto *comboInfo = GetComboInfoForHandle(handle);
+    const auto *comboInfo = GetComboInfoForHandle(handle);
     if (!comboInfo) {
         return BUTTON_COMBO_MODULE_ERROR_INVALID_ARGUMENT;
     }
@@ -571,7 +572,7 @@ ButtonComboModule_Error ButtonComboManager::GetButtonComboCallback(const ButtonC
 ButtonComboModule_Error ButtonComboManager::GetButtonComboInfoEx(const ButtonComboModule_ComboHandle handle,
                                                                  ButtonComboModule_ButtonComboInfoEx &outOptions) {
     std::lock_guard lock(mMutex);
-    auto *comboInfo = GetComboInfoForHandle(handle);
+    const auto *comboInfo = GetComboInfoForHandle(handle);
     if (!comboInfo) {
         DEBUG_FUNCTION_LINE_ERR("ButtonComboModule_GetButtonComboInfo failed to get manager for handle %08X", handle);
         return BUTTON_COMBO_MODULE_ERROR_INVALID_ARGUMENT;

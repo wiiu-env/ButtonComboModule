@@ -40,7 +40,7 @@ bool ButtonComboInfoIF::getMetaOptions(const ButtonComboModule_MetaOptionsOut &o
     return false;
 }
 
-void ButtonComboInfoIF::setMetaOptions(ButtonComboModule_MetaOptions options) {
+void ButtonComboInfoIF::setMetaOptions(const ButtonComboModule_MetaOptions options) {
     mLabel = options.label;
     DEBUG_FUNCTION_LINE("Updated label to: \"%s\", for %08X", mLabel.c_str(), getHandle().handle);
 }
@@ -49,7 +49,7 @@ ButtonComboModule_CallbackOptions ButtonComboInfoIF::getCallbackOptions() const 
     return {.callback = mCallback, .context = mContext};
 }
 
-void ButtonComboInfoIF::setCallbackOptions(ButtonComboModule_CallbackOptions options) {
+void ButtonComboInfoIF::setCallbackOptions(const ButtonComboModule_CallbackOptions options) {
     mCallback = options.callback;
     mContext  = options.context;
     DEBUG_FUNCTION_LINE("Updated callback to: %08X(%08X), for %s %08X", mCallback, mContext, mLabel.c_str(), getHandle().handle);
@@ -76,7 +76,7 @@ ButtonComboModule_ControllerTypes ButtonComboInfoIF::getControllerMask() const {
     return mControllerMask;
 }
 
-void ButtonComboInfoIF::setControllerMask(ButtonComboModule_ControllerTypes mask) {
+void ButtonComboInfoIF::setControllerMask(const ButtonComboModule_ControllerTypes mask) {
     mControllerMask = mask;
     DEBUG_FUNCTION_LINE("Updated controllerMask to: %08X, for %s %08X", mControllerMask, mLabel.c_str(), getHandle().handle);
 }
