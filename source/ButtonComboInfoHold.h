@@ -21,6 +21,8 @@ public:
                         void *context,
                         bool observer);
 
+    ~ButtonComboInfoHold() override;
+
 private:
     void UpdateInput(ButtonComboModule_ControllerTypes controller, std::span<uint32_t> pressedButtons) override;
 

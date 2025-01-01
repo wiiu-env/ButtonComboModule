@@ -49,7 +49,12 @@ WUMS_DEINITIALIZE() {
 }
 
 WUMS_APPLICATION_STARTS() {
+    initLogging();
     OSReport("Running ButtonComboModule " MODULE_VERSION MODULE_VERSION_EXTRA "\n");
 
     InitDRCAttachCallbacks();
+}
+
+WUMS_APPLICATION_ENDS() {
+    deinitLogging();
 }

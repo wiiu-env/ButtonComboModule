@@ -53,9 +53,14 @@ ButtonComboInfoHold::ButtonComboInfoHold(std::string label,
                                                                                   context,
                                                                                   observer),
                                                                 mTargetDurationInFrames(targetDuration) {
+    DEBUG_FUNCTION_LINE_INFO("Created ButtonComboInfoDown: \"%s\", combo: %08X, targetDurationInMs: %d ms, controllerMask: %08X", mLabel.c_str(), mCombo, mTargetDurationInMs, mControllerMask);
 }
 
-void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes controller, std::span<uint32_t> pressedButtons) {
+ButtonComboInfoHold::~ButtonComboInfoHold() {
+    DEBUG_FUNCTION_LINE_INFO("Deleted ButtonComboInfoDown: \"%s\", combo: %08X, targetDurationInMs: %d ms, controllerMask: %08X", mLabel.c_str(), mCombo, mTargetDurationInMs, mControllerMask);
+}
+
+void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes controller, const std::span<uint32_t> pressedButtons) {
     if ((mControllerMask & controller) == 0) {
         return;
     }
@@ -68,6 +73,8 @@ void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes co
     auto &holdInformation        = mHoldInformation[chanIndex];
     const auto latestButtonPress = pressedButtons.back();
 
+    DEBUG_FUNCTION_LINE_VERBOSE("[HOLD      ] Check button combo %08X on controller %08X (lastItem im pressedButtons (size %d) is %08X) for %s [%08X]", mCombo, controller, pressedButtons.size(), latestButtonPress, mLabel.c_str(), getHandle().handle);
+
     const bool prevButtonsIncludedCombo = (holdInformation.prevButtonCombo & mCombo) == mCombo; // Make sure the combo can't be triggered on releasing
     const bool buttonsPressedChanged    = holdInformation.prevButtonCombo != latestButtonPress; // Avoid "holding" the combo
     const bool buttonsPressedMatchCombo = latestButtonPress == mCombo;                          // detect the actual combo
@@ -79,6 +86,7 @@ void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes co
         if (holdInformation.durationInFrames > mTargetDurationInFrames && !holdInformation.callbackTriggered) {
             if (mCallback != nullptr) {
                 mCallback(getHandle(), mContext);
+                DEBUG_FUNCTION_LINE("Calling callback [%08X](%08X) for \"%s\" [handle: %08X], hold %08X for %d ms", mCallback, mContext, mLabel.c_str(), getHandle().handle, mCombo, intervalInMs);
 
             } else {
                 DEBUG_FUNCTION_LINE_WARN("Callback was null for combo %08X", getHandle());
@@ -93,6 +101,7 @@ void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes co
 
 ButtonComboModule_Error ButtonComboInfoHold::setHoldDuration(const uint32_t holdDurationInFrames) {
     mTargetDurationInFrames = holdDurationInFrames;
+    DEBUG_FUNCTION_LINE("Setting holdDurationInMs to %d for %s [%08X]", holdDurationInMs, mLabel.c_str(), getHandle().handle);
     return BUTTON_COMBO_MODULE_ERROR_SUCCESS;
 }
 
