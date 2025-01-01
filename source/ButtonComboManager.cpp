@@ -416,8 +416,12 @@ void ButtonComboManager::UpdateInputVPAD(const VPADChan chan, const VPADStatus *
 }
 
 void ButtonComboManager::UpdateInputWPAD(const WPADChan chan, WPADStatus *data) {
-    if (chan < WPAD_CHAN_0 || chan > WPAD_CHAN_6 || !data || data->error || data->extensionType == 0xFF) {
-        DEBUG_FUNCTION_LINE_ERR("Invalid WPADChan or data state");
+    if (chan < WPAD_CHAN_0 || chan > WPAD_CHAN_6) {
+        DEBUG_FUNCTION_LINE_WARN("Invalid WPADChan %d", chan);
+        return;
+    }
+    if (!data || data->error || data->extensionType == 0xFF) {
+        DEBUG_FUNCTION_LINE_VERBOSE("Invalid data or state");
         return;
     }
     const auto controller   = convert(chan);
@@ -651,10 +655,12 @@ ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const But
         lastHold = buttonsHold;
 
         if (holdFor >= holdAbortTarget && lastHold == abortButton) {
+            DEBUG_FUNCTION_LINE("Aborted button combo detection");
             return BUTTON_COMBO_MODULE_ERROR_ABORTED;
         }
 
         if (holdFor >= holdForTarget) {
+            DEBUG_FUNCTION_LINE_INFO("Detected button combo %08X", lastHold);
             outButtonCombo = static_cast<ButtonComboModule_Buttons>(lastHold);
             break;
         }

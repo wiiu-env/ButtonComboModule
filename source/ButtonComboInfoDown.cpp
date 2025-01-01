@@ -9,6 +9,11 @@ ButtonComboInfoDown::ButtonComboInfoDown(
         const ButtonComboModule_ComboCallback callback,
         void *context,
         const bool observer) : ButtonComboInfoIF(std::move(label), controllerMask, combo, callback, context, observer) {
+    DEBUG_FUNCTION_LINE_INFO("Created ButtonComboInfoDown: \"%s\", combo: %08X, controllerMask: %08X. Observer %d", mLabel.c_str(), mCombo, mControllerMask, observer);
+}
+
+ButtonComboInfoDown::~ButtonComboInfoDown() {
+    DEBUG_FUNCTION_LINE_INFO("Deleted ButtonComboInfoDown: \"%s\", combo: %08X, controllerMask: %08X.  Observer %d", mLabel.c_str(), mCombo, mControllerMask, mIsObserver);
 }
 
 void ButtonComboInfoDown::UpdateInput(
@@ -18,6 +23,8 @@ void ButtonComboInfoDown::UpdateInput(
         return;
     }
 
+    DEBUG_FUNCTION_LINE_VERBOSE("[PRESS DOWN] Check button combo %08X on controller %08X (lastItem im pressedButtons (size %d) is %08X) for %s [%08X]", mCombo, controller, pressedButtons.size(), pressedButtons.back(), mLabel.c_str(), getHandle().handle);
+
     for (const auto &pressedButton : pressedButtons) {
         const bool prevButtonsIncludedCombo = (mPrevButtonPress & mCombo) == mCombo; // Make sure the combo can't be triggered on releasing
         const bool buttonsPressedChanged    = mPrevButtonPress != pressedButton;     // Avoid "holding" the combo
@@ -26,6 +33,7 @@ void ButtonComboInfoDown::UpdateInput(
         if (buttonsPressedChanged && buttonsPressedMatchCombo && !prevButtonsIncludedCombo) {
             if (mCallback != nullptr) {
                 mCallback(getHandle(), mContext);
+                DEBUG_FUNCTION_LINE("Calling callback [%08X](%08X) for \"%s\" [handle: %08X], pressed down %08X", mCallback, mContext, mLabel.c_str(), getHandle().handle, mCombo);
             } else {
                 DEBUG_FUNCTION_LINE_WARN("Callback was null for combo %08X", getHandle());
             }

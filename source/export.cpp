@@ -2,6 +2,7 @@
 #include "globals.h"
 
 #include <buttoncombo/defines.h>
+#include <logger.h>
 
 #include <wums/exports.h>
 
@@ -19,6 +20,7 @@ ButtonComboModule_Error ButtonComboModule_AddButtonCombo(const ButtonComboModule
     ButtonComboModule_Error err = BUTTON_COMBO_MODULE_ERROR_UNKNOWN_ERROR;
     const auto comboInfoMaybe   = ButtonComboManager::CreateComboInfo(*options, err);
     if (!comboInfoMaybe || err != BUTTON_COMBO_MODULE_ERROR_SUCCESS) {
+        DEBUG_FUNCTION_LINE_WARN("Failed to create combo info for options");
         return err;
     }
 
@@ -37,12 +39,12 @@ ButtonComboModule_Error ButtonComboModule_RemoveButtonCombo(const ButtonComboMod
     }
 
     if (!gButtonComboManager) {
+        DEBUG_FUNCTION_LINE_ERR("gButtonComboManager was nullptr");
         return BUTTON_COMBO_MODULE_ERROR_UNKNOWN_ERROR;
     }
 
     return gButtonComboManager->RemoveCombo(handle);
 }
-
 
 ButtonComboModule_Error ButtonComboModule_GetButtonComboStatus(const ButtonComboModule_ComboHandle handle,
                                                                ButtonComboModule_ComboStatus *outComboStatus) {
@@ -51,6 +53,7 @@ ButtonComboModule_Error ButtonComboModule_GetButtonComboStatus(const ButtonCombo
     }
 
     if (!gButtonComboManager) {
+        DEBUG_FUNCTION_LINE_ERR("gButtonComboManager was nullptr");
         return BUTTON_COMBO_MODULE_ERROR_UNKNOWN_ERROR;
     }
 
@@ -63,6 +66,7 @@ ButtonComboModule_Error ButtonComboModule_UpdateButtonComboMeta(const ButtonComb
         return BUTTON_COMBO_MODULE_ERROR_INVALID_ARGUMENT;
     }
     if (!gButtonComboManager) {
+        DEBUG_FUNCTION_LINE_ERR("gButtonComboManager was nullptr");
         return BUTTON_COMBO_MODULE_ERROR_UNKNOWN_ERROR;
     }
 
@@ -75,6 +79,7 @@ ButtonComboModule_Error ButtonComboModule_UpdateButtonComboCallback(const Button
         return BUTTON_COMBO_MODULE_ERROR_INVALID_ARGUMENT;
     }
     if (!gButtonComboManager) {
+        DEBUG_FUNCTION_LINE_ERR("gButtonComboManager was nullptr");
         return BUTTON_COMBO_MODULE_ERROR_UNKNOWN_ERROR;
     }
 
@@ -89,6 +94,7 @@ ButtonComboModule_Error ButtonComboModule_UpdateControllerMask(const ButtonCombo
     }
 
     if (!gButtonComboManager) {
+        DEBUG_FUNCTION_LINE_ERR("gButtonComboManager was nullptr");
         return BUTTON_COMBO_MODULE_ERROR_UNKNOWN_ERROR;
     }
 
@@ -106,6 +112,7 @@ ButtonComboModule_Error ButtonComboModule_UpdateButtonCombo(const ButtonComboMod
     }
 
     if (!gButtonComboManager) {
+        DEBUG_FUNCTION_LINE_ERR("gButtonComboManager was nullptr");
         return BUTTON_COMBO_MODULE_ERROR_UNKNOWN_ERROR;
     }
 
@@ -122,6 +129,7 @@ ButtonComboModule_Error ButtonComboModule_UpdateHoldDuration(const ButtonComboMo
     }
 
     if (!gButtonComboManager) {
+        DEBUG_FUNCTION_LINE_ERR("gButtonComboManager was nullptr");
         return BUTTON_COMBO_MODULE_ERROR_UNKNOWN_ERROR;
     }
 
@@ -135,6 +143,7 @@ ButtonComboModule_Error ButtonComboModule_GetButtonComboMeta(const ButtonComboMo
     }
 
     if (!gButtonComboManager) {
+        DEBUG_FUNCTION_LINE_ERR("gButtonComboManager was nullptr");
         return BUTTON_COMBO_MODULE_ERROR_UNKNOWN_ERROR;
     }
 
@@ -148,6 +157,7 @@ ButtonComboModule_Error ButtonComboModule_GetButtonComboCallback(const ButtonCom
     }
 
     if (!gButtonComboManager) {
+        DEBUG_FUNCTION_LINE_ERR("gButtonComboManager was nullptr");
         return BUTTON_COMBO_MODULE_ERROR_UNKNOWN_ERROR;
     }
 
@@ -161,6 +171,7 @@ ButtonComboModule_Error ButtonComboModule_GetButtonComboInfoEx(const ButtonCombo
     }
 
     if (!gButtonComboManager) {
+        DEBUG_FUNCTION_LINE_ERR("gButtonComboManager was nullptr");
         return BUTTON_COMBO_MODULE_ERROR_UNKNOWN_ERROR;
     }
 
@@ -173,6 +184,7 @@ ButtonComboModule_Error ButtonComboModule_CheckComboAvailable(const ButtonComboM
         return BUTTON_COMBO_MODULE_ERROR_INVALID_ARGUMENT;
     }
     if (!gButtonComboManager) {
+        DEBUG_FUNCTION_LINE_ERR("gButtonComboManager was nullptr");
         return BUTTON_COMBO_MODULE_ERROR_UNKNOWN_ERROR;
     }
 
@@ -187,6 +199,7 @@ ButtonComboModule_Error ButtonComboModule_DetectButtonCombo_Blocking(const Butto
     }
 
     if (!gButtonComboManager) {
+        DEBUG_FUNCTION_LINE_ERR("gButtonComboManager was nullptr");
         return BUTTON_COMBO_MODULE_ERROR_UNKNOWN_ERROR;
     }
 

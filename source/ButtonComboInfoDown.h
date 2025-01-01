@@ -16,6 +16,7 @@ public:
                         ButtonComboModule_ComboCallback callback,
                         void *context,
                         bool observer);
+    ~ButtonComboInfoDown() override;
 
 private:
     void UpdateInput(ButtonComboModule_ControllerTypes controller, std::span<uint32_t> pressedButtons) override;
