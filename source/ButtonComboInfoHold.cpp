@@ -43,7 +43,7 @@ namespace {
 ButtonComboInfoHold::ButtonComboInfoHold(std::string label,
                                          const ButtonComboModule_ControllerTypes controllerMask,
                                          const ButtonComboModule_Buttons combo,
-                                         const uint32_t targetDuration,
+                                         const uint32_t targetDurationInMs,
                                          const ButtonComboModule_ComboCallback callback,
                                          void *context,
                                          const bool observer) : ButtonComboInfoIF(std::move(label),
@@ -52,7 +52,7 @@ ButtonComboInfoHold::ButtonComboInfoHold(std::string label,
                                                                                   callback,
                                                                                   context,
                                                                                   observer),
-                                                                mTargetDurationInFrames(targetDuration) {
+                                                                mTargetDurationInMs(targetDurationInMs) {
     DEBUG_FUNCTION_LINE_INFO("Created ButtonComboInfoDown: \"%s\", combo: %08X, targetDurationInMs: %d ms, controllerMask: %08X", mLabel.c_str(), mCombo, mTargetDurationInMs, mControllerMask);
 }
 
@@ -81,12 +81,16 @@ void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes co
 
     holdInformation.prevButtonCombo = latestButtonPress;
 
-    if (!(buttonsPressedChanged && prevButtonsIncludedCombo) && (holdInformation.durationInFrames > 0 || buttonsPressedChanged) && buttonsPressedMatchCombo) {
-        holdInformation.durationInFrames++;
-        if (holdInformation.durationInFrames > mTargetDurationInFrames && !holdInformation.callbackTriggered) {
+    if (!(buttonsPressedChanged && prevButtonsIncludedCombo) && (holdInformation.holdStartedAt > 0 || buttonsPressedChanged) && buttonsPressedMatchCombo) {
+        if (holdInformation.holdStartedAt == 0) {
+            holdInformation.holdStartedAt = OSGetTime();
+        }
+        const auto intervalInMs = static_cast<uint32_t>(OSTicksToMilliseconds(OSGetTime() - holdInformation.holdStartedAt));
+
+        if (intervalInMs > mTargetDurationInMs && !holdInformation.callbackTriggered) {
             if (mCallback != nullptr) {
-                mCallback(getHandle(), mContext);
-                DEBUG_FUNCTION_LINE("Calling callback [%08X](%08X) for \"%s\" [handle: %08X], hold %08X for %d ms", mCallback, mContext, mLabel.c_str(), getHandle().handle, mCombo, intervalInMs);
+                DEBUG_FUNCTION_LINE("Calling callback [%08X](controller: %08X context: %08X) for \"%s\" [handle: %08X], hold %08X for %d ms", mCallback, controller, mContext, mLabel.c_str(), getHandle().handle, mCombo, intervalInMs);
+                mCallback(controller, getHandle(), mContext);
 
             } else {
                 DEBUG_FUNCTION_LINE_WARN("Callback was null for combo %08X", getHandle());
@@ -95,18 +99,18 @@ void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes co
         }
     } else {
         holdInformation.callbackTriggered = false;
-        holdInformation.durationInFrames  = 0;
+        holdInformation.holdStartedAt     = 0;
     }
 }
 
-ButtonComboModule_Error ButtonComboInfoHold::setHoldDuration(const uint32_t holdDurationInFrames) {
-    mTargetDurationInFrames = holdDurationInFrames;
+ButtonComboModule_Error ButtonComboInfoHold::setHoldDuration(const uint32_t holdDurationInMs) {
     DEBUG_FUNCTION_LINE("Setting holdDurationInMs to %d for %s [%08X]", holdDurationInMs, mLabel.c_str(), getHandle().handle);
+    mTargetDurationInMs = holdDurationInMs;
     return BUTTON_COMBO_MODULE_ERROR_SUCCESS;
 }
 
 ButtonComboModule_ButtonComboInfoEx ButtonComboInfoHold::getComboInfoEx() const {
-    return {.type                   = mIsObserver ? BUTTON_COMBO_MODULE_TYPE_HOLD_OBSERVER : BUTTON_COMBO_MODULE_TYPE_HOLD,
-            .basicCombo             = {.controllerMask = mControllerMask, .combo = mCombo},
-            .optionalHoldForXFrames = mTargetDurationInMs};
+    return {.type               = mIsObserver ? BUTTON_COMBO_MODULE_TYPE_HOLD_OBSERVER : BUTTON_COMBO_MODULE_TYPE_HOLD,
+            .basicCombo         = {.controllerMask = mControllerMask, .combo = mCombo},
+            .optionalHoldForXMs = mTargetDurationInMs};
 }

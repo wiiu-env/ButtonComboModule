@@ -284,8 +284,7 @@ std::optional<std::shared_ptr<ButtonComboInfoIF>> ButtonComboManager::CreateComb
             observer = true;
             __attribute__((fallthrough));
         case BUTTON_COMBO_MODULE_TYPE_HOLD: {
-
-            if (options.buttonComboOptions.optionalHoldForXFrames == 0) {
+            if (options.buttonComboOptions.optionalHoldForXMs == 0) {
                 err = BUTTON_COMBO_MODULE_ERROR_DURATION_MISSING;
                 return std::nullopt;
             }
@@ -293,7 +292,7 @@ std::optional<std::shared_ptr<ButtonComboInfoIF>> ButtonComboManager::CreateComb
             return std::make_shared<ButtonComboInfoHold>(options.metaOptions.label,
                                                          options.buttonComboOptions.basicCombo.controllerMask,
                                                          options.buttonComboOptions.basicCombo.combo,
-                                                         options.buttonComboOptions.optionalHoldForXFrames,
+                                                         options.buttonComboOptions.optionalHoldForXMs,
                                                          options.callbackOptions.callback,
                                                          options.callbackOptions.context,
                                                          observer);
