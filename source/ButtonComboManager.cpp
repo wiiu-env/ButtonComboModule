@@ -595,10 +595,12 @@ ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const But
     std::lock_guard lock(mMutex);
 
     if (options.controllerMask == BUTTON_COMBO_MODULE_CONTROLLER_NONE) {
+        DEBUG_FUNCTION_LINE_WARN("Failed to detect button combo: Controller Mask was empty.");
         return BUTTON_COMBO_MODULE_ERROR_INVALID_ARGUMENT;
     }
 
     if (options.holdComboForInMs == 0 || options.holdAbortForInMs == 0 || options.abortButtonCombo == 0) {
+        DEBUG_FUNCTION_LINE_WARN("Failed to detect button combo: Invalid params. holdComboFor: %s ms, holdAbortFor: %d ms, abortButtonCombo: %08X", options.holdComboForInMs, options.holdAbortForInMs, options.abortButtonCombo);
         return BUTTON_COMBO_MODULE_ERROR_INVALID_ARGUMENT;
     }
 
