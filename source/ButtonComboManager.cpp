@@ -629,6 +629,10 @@ ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const But
             buttonsHold |= convertedButtons;
         }
         for (int i = 0; i < 7; i++) {
+            WPADExtensionType type;
+            if (WPADProbe(static_cast<WPADChan>(i), &type) != 0) {
+                continue;
+            }
 
             uint32_t convertedButtons = 0;
             kpad_data                 = {};
