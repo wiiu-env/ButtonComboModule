@@ -612,17 +612,41 @@ ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const But
     const uint32_t abortButton     = options.abortButtonCombo;
 
     while (true) {
-        uint32_t buttonsHold = 0;
+        uint32_t buttonsHold      = 0;
+        uint32_t buttonsHoldAbort = 0;
         for (int i = 0; i < 2; i++) {
-            VPADReadError vpad_error = VPAD_READ_UNINITIALIZED;
-            VPADStatus vpad_data     = {};
+            VPADReadError vpad_error  = VPAD_READ_UNINITIALIZED;
+            VPADStatus vpad_data      = {};
+            uint32_t convertedButtons = 0;
+            if (VPADRead(static_cast<VPADChan>(i), &vpad_data, 1, &vpad_error) > 0 && vpad_error == VPAD_READ_SUCCESS) {
+                convertedButtons = remapVPADButtons(vpad_data.hold);
+            }
+            buttonsHoldAbort |= convertedButtons;
+
             if (i == 0 && !(options.controllerMask & BUTTON_COMBO_MODULE_CONTROLLER_VPAD_0)) { continue; }
             if (i == 1 && !(options.controllerMask & BUTTON_COMBO_MODULE_CONTROLLER_VPAD_1)) { continue; }
-            if (VPADRead(static_cast<VPADChan>(i), &vpad_data, 1, &vpad_error) > 0 && vpad_error == VPAD_READ_SUCCESS) {
-                buttonsHold = remapVPADButtons(vpad_data.hold);
-            }
+
+            buttonsHold |= convertedButtons;
         }
         for (int i = 0; i < 7; i++) {
+
+            uint32_t convertedButtons = 0;
+            kpad_data                 = {};
+            if (KPADReadEx(static_cast<KPADChan>(i), &kpad_data, 1, &kpad_error) > 0) {
+                DEBUG_FUNCTION_LINE_ERR("KPAD chan %d success %d %d", i, kpad_error, kpad_data.extensionType);
+                if (kpad_error == KPAD_ERROR_OK && kpad_data.extensionType != 0xFF) {
+                    if (kpad_data.extensionType == WPAD_EXT_CORE || kpad_data.extensionType == WPAD_EXT_NUNCHUK) {
+                        convertedButtons = remapWiiMoteButtons(kpad_data.hold);
+                    } else if (kpad_data.extensionType == WPAD_EXT_PRO_CONTROLLER) {
+                        convertedButtons = remapProButtons(kpad_data.pro.hold);
+                    } else {
+                        convertedButtons = remapClassicButtons(kpad_data.classic.hold);
+                    }
+                }
+            }
+
+            buttonsHoldAbort |= convertedButtons;
+
             if (i == 0 && !(options.controllerMask & BUTTON_COMBO_MODULE_CONTROLLER_WPAD_0)) { continue; }
             if (i == 1 && !(options.controllerMask & BUTTON_COMBO_MODULE_CONTROLLER_WPAD_1)) { continue; }
             if (i == 2 && !(options.controllerMask & BUTTON_COMBO_MODULE_CONTROLLER_WPAD_2)) { continue; }
@@ -630,18 +654,8 @@ ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const But
             if (i == 4 && !(options.controllerMask & BUTTON_COMBO_MODULE_CONTROLLER_WPAD_4)) { continue; }
             if (i == 5 && !(options.controllerMask & BUTTON_COMBO_MODULE_CONTROLLER_WPAD_5)) { continue; }
             if (i == 6 && !(options.controllerMask & BUTTON_COMBO_MODULE_CONTROLLER_WPAD_6)) { continue; }
-            kpad_data = {};
-            if (KPADReadEx(static_cast<KPADChan>(i), &kpad_data, 1, &kpad_error) > 0) {
-                if (kpad_error == KPAD_ERROR_OK && kpad_data.extensionType != 0xFF) {
-                    if (kpad_data.extensionType == WPAD_EXT_CORE || kpad_data.extensionType == WPAD_EXT_NUNCHUK) {
-                        buttonsHold |= remapWiiMoteButtons(kpad_data.hold);
-                    } else if (kpad_data.extensionType == WPAD_EXT_PRO_CONTROLLER) {
-                        buttonsHold |= remapProButtons(kpad_data.pro.hold);
-                    } else {
-                        buttonsHold |= remapClassicButtons(kpad_data.classic.hold);
-                    }
-                }
-            }
+
+            buttonsHold |= convertedButtons;
         }
 
         if (buttonsHold == lastHold) {
