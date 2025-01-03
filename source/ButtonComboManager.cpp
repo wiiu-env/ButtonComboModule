@@ -602,6 +602,19 @@ ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const But
         return BUTTON_COMBO_MODULE_ERROR_INVALID_ARGUMENT;
     }
 
+    bool doShutdownKPAD         = false;
+    bool doDisableProController = false;
+    KPADStatus status;
+    KPADError err = KPAD_ERROR_OK;
+    if (KPADReadEx(WPAD_CHAN_0, &status, 0, &err) == 0 && err == KPAD_ERROR_UNINITIALIZED) {
+        doShutdownKPAD = true;
+        KPADInit();
+    }
+    if (!WPADIsEnabledURC()) {
+        WPADEnableURCC(true);
+        doDisableProController = true;
+    }
+
     KPADStatus kpad_data{};
     KPADError kpad_error;
 
@@ -611,6 +624,8 @@ ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const But
     const uint32_t holdAbortTarget = options.holdAbortForInMs >> 4; // roughly ms to frames. Works because we wait 16ms in the loop
     const uint32_t abortButton     = options.abortButtonCombo;
 
+
+    ButtonComboModule_Error result = BUTTON_COMBO_MODULE_ERROR_UNKNOWN_ERROR;
     while (true) {
         uint32_t buttonsHold      = 0;
         uint32_t buttonsHoldAbort = 0;
@@ -673,16 +688,27 @@ ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const But
 
         if (holdFor >= holdAbortTarget && lastHold == abortButton) {
             DEBUG_FUNCTION_LINE("Aborted button combo detection");
-            return BUTTON_COMBO_MODULE_ERROR_ABORTED;
+            result = BUTTON_COMBO_MODULE_ERROR_ABORTED;
+            break;
         }
 
         if (holdFor >= holdForTarget) {
             DEBUG_FUNCTION_LINE_INFO("Detected button combo %08X", lastHold);
             outButtonCombo = static_cast<ButtonComboModule_Buttons>(lastHold);
+            result         = BUTTON_COMBO_MODULE_ERROR_SUCCESS;
             break;
         }
         OSSleepTicks(OSMillisecondsToTicks(16));
     }
 
-    return BUTTON_COMBO_MODULE_ERROR_SUCCESS;
+    if (doDisableProController) {
+        WPADEnableURCC(false);
+    }
+
+    if (doShutdownKPAD) {
+        KPADShutdown();
+    }
+
+
+    return result;
 }
