@@ -1,5 +1,4 @@
 #include "ButtonComboManager.h"
-#include "DRCAttachCallback.h"
 #include "function_patches.h"
 #include "globals.h"
 #include "logger.h"
@@ -31,11 +30,6 @@ WUMS_INITIALIZE() {
             OSFatal("ButtonComboModule: Failed to patch ButtonComboModule function");
         }
     }
-    for (uint32_t i = 0; i < drc_function_replacements_size; i++) {
-        if (FunctionPatcher_AddFunctionPatch(&drc_function_replacements[i], nullptr, &patchSuccess) != FUNCTION_PATCHER_RESULT_SUCCESS || !patchSuccess) {
-            OSFatal("ButtonComboModule: Failed to patch ButtonComboModule function");
-        }
-    }
     DEBUG_FUNCTION_LINE("Patch ButtonComboModule functions finished");
 
 
@@ -51,8 +45,6 @@ WUMS_DEINITIALIZE() {
 WUMS_APPLICATION_STARTS() {
     initLogging();
     OSReport("Running ButtonComboModule " MODULE_VERSION MODULE_VERSION_EXTRA "\n");
-
-    InitDRCAttachCallbacks();
 }
 
 WUMS_APPLICATION_ENDS() {

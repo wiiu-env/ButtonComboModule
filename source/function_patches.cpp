@@ -1,11 +1,10 @@
 #include "ButtonComboInfo.h"
 #include "ButtonComboManager.h"
-#include "DRCAttachCallback.h"
 #include "globals.h"
 
 #include <function_patcher/fpatching_defines.h>
+#include <logger.h>
 
-#include <coreinit/messagequeue.h>
 #include <padscore/wpad.h>
 #include <vpad/input.h>
 
@@ -29,28 +28,27 @@ DECL_FUNCTION(void, WPADRead, WPADChan chan, WPADStatus *data) {
         gButtonComboManager->UpdateInputWPAD(chan, data);
     }
 }
+struct WUT_PACKED CCRCDCCallbackData {
+    uint32_t attached;
+    VPADChan chan;
+    WUT_UNKNOWN_BYTES(6);
+};
 
+DECL_FUNCTION(void, __VPADBASEAttachCallback, CCRCDCCallbackData *data, void *context) {
+    real___VPADBASEAttachCallback(data, context);
 
-static uint32_t lastData0 = 0;
-DECL_FUNCTION(uint32_t, OSReceiveMessage, OSMessageQueue *queue, OSMessage *message, uint32_t flags) {
-    const uint32_t res = real_OSReceiveMessage(queue, message, flags);
-    if (queue == OSGetSystemMessageQueue()) {
-        if (message != nullptr && res) {
-            if (lastData0 != message->args[0]) {
-                if (message->args[0] == 0xFACEF000) {
-                    InitDRCAttachCallbacks();
-                }
-            }
-            lastData0 = message->args[0];
+    if (data && data->attached) {
+        if (gButtonComboManager) {
+            const bool block = gButtonComboManager->hasActiveComboWithTVButton();
+            VPADSetTVMenuInvalid(data->chan, block);
         }
     }
-    return res;
 }
 
 function_replacement_data_t function_replacements[] = {
         REPLACE_FUNCTION(VPADRead, LIBRARY_VPAD, VPADRead),
         REPLACE_FUNCTION(WPADRead, LIBRARY_PADSCORE, WPADRead),
-        REPLACE_FUNCTION(OSReceiveMessage, LIBRARY_COREINIT, OSReceiveMessage),
+        REPLACE_FUNCTION_VIA_ADDRESS(__VPADBASEAttachCallback, 0x31000000 + 0x0200146c - 0x00EE0100, 0x0200146c - 0x00EE0100),
 };
 
 uint32_t function_replacements_size = sizeof(function_replacements) / sizeof(function_replacement_data_t);
