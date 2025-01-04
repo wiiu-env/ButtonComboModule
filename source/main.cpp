@@ -32,7 +32,6 @@ WUMS_INITIALIZE() {
     }
     DEBUG_FUNCTION_LINE("Patch ButtonComboModule functions finished");
 
-
     gButtonComboManager = std::make_unique<ButtonComboManager>();
 
     deinitLogging();

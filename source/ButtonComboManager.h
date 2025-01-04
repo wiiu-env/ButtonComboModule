@@ -19,14 +19,13 @@ public:
 
     static std::optional<std::shared_ptr<ButtonComboInfoIF>> CreateComboInfo(const ButtonComboModule_ComboOptions &options, ButtonComboModule_Error &err);
 
-    ButtonComboInfoIF *GetComboInfoForHandle(ButtonComboModule_ComboHandle handle) const;
+    [[nodiscard]] ButtonComboInfoIF *GetComboInfoForHandle(ButtonComboModule_ComboHandle handle) const;
 
     void UpdateInputVPAD(VPADChan chan, const VPADStatus *buffer, uint32_t bufferSize, const VPADReadError *error);
 
     void UpdateInputWPAD(WPADChan chan, WPADStatus *data);
 
     bool hasActiveComboWithTVButton();
-
 
     ButtonComboModule_ComboStatus CheckComboStatus(const ButtonComboInfoIF &other);
 
