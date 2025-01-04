@@ -126,6 +126,22 @@ namespace {
             conv_buttons |= BCMPAD_BUTTON_MINUS;
         }
 
+        if (buttons & WPAD_BUTTON_1) {
+            conv_buttons |= BCMPAD_BUTTON_1;
+        }
+
+        if (buttons & WPAD_BUTTON_2) {
+            conv_buttons |= BCMPAD_BUTTON_2;
+        }
+
+        if (buttons & WPAD_BUTTON_C) {
+            conv_buttons |= BCMPAD_BUTTON_C;
+        }
+
+        if (buttons & WPAD_BUTTON_Z) {
+            conv_buttons |= BCMPAD_BUTTON_Z;
+        }
+
         return conv_buttons;
     }
 
