@@ -59,4 +59,5 @@ private:
     std::forward_list<std::shared_ptr<ButtonComboInfoIF>> mCombos;
     std::vector<uint32_t> mVPADButtonBuffer;
     std::mutex mMutex;
+    std::mutex mDetectButtonsMutex;
 };
