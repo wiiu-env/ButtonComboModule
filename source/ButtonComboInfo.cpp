@@ -61,6 +61,7 @@ uint32_t ButtonComboInfoIF::getCombo() const {
 void ButtonComboInfoIF::setCombo(const ButtonComboModule_Buttons combo) {
     mCombo = combo;
     DEBUG_FUNCTION_LINE("Updated combo to: %08X, for %s %08X", mCombo, mLabel.c_str(), getHandle().handle);
+    resetPrevInput();
 }
 
 ButtonComboModule_ComboStatus ButtonComboInfoIF::getStatus() const {
@@ -79,6 +80,7 @@ ButtonComboModule_ControllerTypes ButtonComboInfoIF::getControllerMask() const {
 void ButtonComboInfoIF::setControllerMask(const ButtonComboModule_ControllerTypes mask) {
     mControllerMask = mask;
     DEBUG_FUNCTION_LINE("Updated controllerMask to: %08X, for %s %08X", mControllerMask, mLabel.c_str(), getHandle().handle);
+    resetPrevInput();
 }
 
 bool ButtonComboInfoIF::conflictsWith(const ButtonComboModule_ButtonComboOptions &other) const {

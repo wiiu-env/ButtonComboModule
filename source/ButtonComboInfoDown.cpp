@@ -58,3 +58,10 @@ ButtonComboModule_ButtonComboInfoEx ButtonComboInfoDown::getComboInfoEx() const 
             .basicCombo         = {.controllerMask = mControllerMask, .combo = mCombo},
             .optionalHoldForXMs = 0};
 }
+
+void ButtonComboInfoDown::resetPrevInput() {
+    for (uint32_t i = 0; i < std::size(mHoldInformation); ++i) {
+        mHoldInformation[i]                 = {};
+        mHoldInformation[i].prevButtonCombo = 0xFFFFFFFF;
+    }
+}

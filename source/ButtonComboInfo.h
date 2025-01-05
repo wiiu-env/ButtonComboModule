@@ -46,6 +46,8 @@ public:
 
     [[nodiscard]] virtual ButtonComboModule_ButtonComboInfoEx getComboInfoEx() const = 0;
 
+    virtual void resetPrevInput() = 0;
+
 protected:
     static int32_t ControllerTypeToChanIndex(ButtonComboModule_ControllerTypes type);
 

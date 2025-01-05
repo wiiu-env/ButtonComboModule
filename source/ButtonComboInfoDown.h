@@ -29,5 +29,8 @@ private:
 
     [[nodiscard]] ButtonComboModule_ButtonComboInfoEx getComboInfoEx() const override;
 
+    void resetPrevInput() override;
+
+private:
     HoldInformation mHoldInformation[9] = {}; // one for each controller
 };

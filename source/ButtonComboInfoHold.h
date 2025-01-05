@@ -31,6 +31,8 @@ private:
 
     [[nodiscard]] ButtonComboModule_ButtonComboInfoEx getComboInfoEx() const override;
 
+    void resetPrevInput() override;
+
 private:
     typedef struct {
         OSTime holdStartedAt;
