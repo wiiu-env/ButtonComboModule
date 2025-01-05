@@ -608,8 +608,7 @@ ButtonComboModule_ComboStatus ButtonComboManager::CheckComboAvailable(const Butt
 
 ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const ButtonComboModule_DetectButtonComboOptions &options,
                                                                        ButtonComboModule_Buttons &outButtonCombo) {
-    std::lock_guard lock(mMutex);
-
+    std::lock_guard lock(mDetectButtonsMutex);
     if (options.controllerMask == BUTTON_COMBO_MODULE_CONTROLLER_NONE) {
         DEBUG_FUNCTION_LINE_WARN("Failed to detect button combo: Controller Mask was empty.");
         return BUTTON_COMBO_MODULE_ERROR_INVALID_ARGUMENT;
@@ -670,7 +669,6 @@ ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const But
             uint32_t convertedButtons = 0;
             kpad_data                 = {};
             if (KPADReadEx(static_cast<KPADChan>(i), &kpad_data, 1, &kpad_error) > 0) {
-                DEBUG_FUNCTION_LINE_ERR("KPAD chan %d success %d %d", i, kpad_error, kpad_data.extensionType);
                 if (kpad_error == KPAD_ERROR_OK && kpad_data.extensionType != 0xFF) {
                     if (kpad_data.extensionType == WPAD_EXT_CORE || kpad_data.extensionType == WPAD_EXT_NUNCHUK) {
                         convertedButtons = remapWiiMoteButtons(kpad_data.hold);
@@ -726,7 +724,6 @@ ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const But
     if (doShutdownKPAD) {
         KPADShutdown();
     }
-
 
     return result;
 }
