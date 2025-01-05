@@ -22,13 +22,20 @@ void ButtonComboInfoDown::UpdateInput(
     if ((mControllerMask & controller) == 0) {
         return;
     }
+    const auto chanIndex = ControllerTypeToChanIndex(controller);
+    if (chanIndex < 0 || static_cast<uint32_t>(chanIndex) >= std::size(mHoldInformation)) {
+        DEBUG_FUNCTION_LINE_WARN("ChanIndex is out of bounds %d", chanIndex);
+        return;
+    }
+
+    auto &[prevButtonCombo] = mHoldInformation[chanIndex];
 
     DEBUG_FUNCTION_LINE_VERBOSE("[PRESS DOWN] Check button combo %08X on controller %08X (lastItem im pressedButtons (size %d) is %08X) for %s [%08X]", mCombo, controller, pressedButtons.size(), pressedButtons.back(), mLabel.c_str(), getHandle().handle);
 
     for (const auto &pressedButton : pressedButtons) {
-        const bool prevButtonsIncludedCombo = (mPrevButtonPress & mCombo) == mCombo; // Make sure the combo can't be triggered on releasing
-        const bool buttonsPressedChanged    = mPrevButtonPress != pressedButton;     // Avoid "holding" the combo
-        const bool buttonsPressedMatchCombo = pressedButton == mCombo;               // detect the actual combo
+        const bool prevButtonsIncludedCombo = (prevButtonCombo & mCombo) == mCombo; // Make sure the combo can't be triggered on releasing
+        const bool buttonsPressedChanged    = prevButtonCombo != pressedButton;     // Avoid "holding" the combo
+        const bool buttonsPressedMatchCombo = pressedButton == mCombo;              // detect the actual combo
 
         if (buttonsPressedChanged && buttonsPressedMatchCombo && !prevButtonsIncludedCombo) {
             if (mCallback != nullptr) {
@@ -38,7 +45,7 @@ void ButtonComboInfoDown::UpdateInput(
                 DEBUG_FUNCTION_LINE_WARN("Callback was null for combo %08X", getHandle());
             }
         }
-        mPrevButtonPress = pressedButton;
+        prevButtonCombo = pressedButton;
     }
 }
 

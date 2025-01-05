@@ -104,3 +104,39 @@ bool ButtonComboInfoIF::conflictsWith(const ButtonComboModule_ButtonComboOptions
 bool ButtonComboInfoIF::conflictsWith(const ButtonComboInfoIF &other) const {
     return conflictsWith({other.mControllerMask, other.mCombo});
 }
+
+int32_t ButtonComboInfoIF::ControllerTypeToChanIndex(const ButtonComboModule_ControllerTypes type) {
+    switch (type) {
+        case BUTTON_COMBO_MODULE_CONTROLLER_VPAD_0: {
+            return 0;
+        }
+        case BUTTON_COMBO_MODULE_CONTROLLER_VPAD_1: {
+            return 1;
+        }
+        case BUTTON_COMBO_MODULE_CONTROLLER_WPAD_0: {
+            return 2;
+        }
+        case BUTTON_COMBO_MODULE_CONTROLLER_WPAD_1: {
+            return 3;
+        }
+        case BUTTON_COMBO_MODULE_CONTROLLER_WPAD_2: {
+            return 4;
+        }
+        case BUTTON_COMBO_MODULE_CONTROLLER_WPAD_3: {
+            return 5;
+        }
+        case BUTTON_COMBO_MODULE_CONTROLLER_WPAD_4: {
+            return 6;
+        }
+        case BUTTON_COMBO_MODULE_CONTROLLER_WPAD_5: {
+            return 7;
+        }
+        case BUTTON_COMBO_MODULE_CONTROLLER_WPAD_6: {
+            return 8;
+        }
+        default:
+            break;
+    }
+
+    return -1;
+}

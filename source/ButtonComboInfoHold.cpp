@@ -2,44 +2,6 @@
 
 #include <logger.h>
 
-namespace {
-    int32_t controllerTypeToChanIndex(const ButtonComboModule_ControllerTypes type) {
-        switch (type) {
-            case BUTTON_COMBO_MODULE_CONTROLLER_VPAD_0: {
-                return 0;
-            }
-            case BUTTON_COMBO_MODULE_CONTROLLER_VPAD_1: {
-                return 1;
-            }
-            case BUTTON_COMBO_MODULE_CONTROLLER_WPAD_0: {
-                return 2;
-            }
-            case BUTTON_COMBO_MODULE_CONTROLLER_WPAD_1: {
-                return 3;
-            }
-            case BUTTON_COMBO_MODULE_CONTROLLER_WPAD_2: {
-                return 4;
-            }
-            case BUTTON_COMBO_MODULE_CONTROLLER_WPAD_3: {
-                return 5;
-            }
-            case BUTTON_COMBO_MODULE_CONTROLLER_WPAD_4: {
-                return 6;
-            }
-            case BUTTON_COMBO_MODULE_CONTROLLER_WPAD_5: {
-                return 7;
-            }
-            case BUTTON_COMBO_MODULE_CONTROLLER_WPAD_6: {
-                return 8;
-            }
-            default:
-                break;
-        }
-
-        return -1;
-    }
-} // namespace
-
 ButtonComboInfoHold::ButtonComboInfoHold(std::string label,
                                          const ButtonComboModule_ControllerTypes controllerMask,
                                          const ButtonComboModule_Buttons combo,
@@ -64,7 +26,7 @@ void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes co
     if ((mControllerMask & controller) == 0) {
         return;
     }
-    const auto chanIndex = controllerTypeToChanIndex(controller);
+    const auto chanIndex = ControllerTypeToChanIndex(controller);
     if (chanIndex < 0 || static_cast<uint32_t>(chanIndex) >= std::size(mHoldInformation)) {
         DEBUG_FUNCTION_LINE_WARN("ChanIndex is out of bounds %d", chanIndex);
         return;
