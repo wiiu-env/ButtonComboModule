@@ -47,6 +47,8 @@ public:
     [[nodiscard]] virtual ButtonComboModule_ButtonComboInfoEx getComboInfoEx() const = 0;
 
 protected:
+    static int32_t ControllerTypeToChanIndex(ButtonComboModule_ControllerTypes type);
+
     ButtonComboModule_ComboStatus mStatus = BUTTON_COMBO_MODULE_COMBO_STATUS_INVALID_STATUS;
     std::string mLabel;
     ButtonComboModule_ControllerTypes mControllerMask = {};
