@@ -404,6 +404,11 @@ void ButtonComboManager::UpdateInputVPAD(const VPADChan chan, const VPADStatus *
         return;
     }
 
+    // Do not check for combos while the combo detection is active
+    if (mInButtonComboDetection) {
+        return;
+    }
+
     {
         std::lock_guard lock(mMutex);
         const auto controller   = convert(chan);
@@ -440,6 +445,12 @@ void ButtonComboManager::UpdateInputWPAD(const WPADChan chan, WPADStatus *data) 
         DEBUG_FUNCTION_LINE_VERBOSE("Invalid data or state");
         return;
     }
+
+    // Do not check for combos while the combo detection is active
+    if (mInButtonComboDetection) {
+        return;
+    }
+
     const auto controller   = convert(chan);
     uint32_t pressedButtons = {};
     switch (data->extensionType) {
@@ -619,6 +630,8 @@ ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const But
         return BUTTON_COMBO_MODULE_ERROR_INVALID_ARGUMENT;
     }
 
+    mInButtonComboDetection = true;
+
     bool doShutdownKPAD         = false;
     bool doDisableProController = false;
     KPADStatus status;
@@ -724,6 +737,7 @@ ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const But
     if (doShutdownKPAD) {
         KPADShutdown();
     }
+    mInButtonComboDetection = true;
 
     return result;
 }

@@ -60,4 +60,5 @@ private:
     std::vector<uint32_t> mVPADButtonBuffer;
     std::mutex mMutex;
     std::mutex mDetectButtonsMutex;
+    bool mInButtonComboDetection = false;
 };
