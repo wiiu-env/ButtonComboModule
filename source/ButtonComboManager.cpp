@@ -737,7 +737,7 @@ ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const But
     if (doShutdownKPAD) {
         KPADShutdown();
     }
-    mInButtonComboDetection = true;
+    mInButtonComboDetection = false;
 
     return result;
 }
