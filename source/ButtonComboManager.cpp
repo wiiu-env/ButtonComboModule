@@ -293,6 +293,10 @@ std::optional<std::shared_ptr<ButtonComboInfoIF>> ButtonComboManager::CreateComb
         err = BUTTON_COMBO_MODULE_ERROR_INVALID_COMBO;
         return std::nullopt;
     }
+    if (options.callbackOptions.callback == nullptr) {
+        err = BUTTON_COMBO_MODULE_ERROR_INVALID_ARGUMENT;
+        return std::nullopt;
+    }
 
     bool observer = false;
     switch (options.buttonComboOptions.type) {
