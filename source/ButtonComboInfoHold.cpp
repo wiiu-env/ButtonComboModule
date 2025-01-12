@@ -15,11 +15,11 @@ ButtonComboInfoHold::ButtonComboInfoHold(std::string label,
                                                                                   context,
                                                                                   observer),
                                                                 mTargetDurationInMs(targetDurationInMs) {
-    DEBUG_FUNCTION_LINE_INFO("Created ButtonComboInfoDown: \"%s\", combo: %08X, targetDurationInMs: %d ms, controllerMask: %08X", mLabel.c_str(), mCombo, mTargetDurationInMs, mControllerMask);
+    DEBUG_FUNCTION_LINE_INFO("Created ButtonComboInfoHold: \"%s\", combo: %08X, targetDurationInMs: %d ms, controllerMask: %08X", mLabel.c_str(), mCombo, mTargetDurationInMs, mControllerMask);
 }
 
 ButtonComboInfoHold::~ButtonComboInfoHold() {
-    DEBUG_FUNCTION_LINE_INFO("Deleted ButtonComboInfoDown: \"%s\", combo: %08X, targetDurationInMs: %d ms, controllerMask: %08X", mLabel.c_str(), mCombo, mTargetDurationInMs, mControllerMask);
+    DEBUG_FUNCTION_LINE_INFO("Deleted ButtonComboInfoHold: \"%s\", combo: %08X, targetDurationInMs: %d ms, controllerMask: %08X", mLabel.c_str(), mCombo, mTargetDurationInMs, mControllerMask);
 }
 
 void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes controller, const std::span<uint32_t> pressedButtons) {
