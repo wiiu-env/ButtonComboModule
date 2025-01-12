@@ -32,12 +32,12 @@ const std::string &ButtonComboInfoIF::getLabel() const {
 
 bool ButtonComboInfoIF::getMetaOptions(const ButtonComboModule_MetaOptionsOut &outMeta) const {
     if (outMeta.labelBuffer == nullptr || outMeta.labelBufferLength == 0) {
-        return true;
+        return false;
     }
 
     snprintf(outMeta.labelBuffer, outMeta.labelBufferLength, mLabel.c_str());
 
-    return false;
+    return true;
 }
 
 void ButtonComboInfoIF::setMetaOptions(const ButtonComboModule_MetaOptions options) {
