@@ -54,7 +54,7 @@ ButtonComboModule_Error ButtonComboInfoDown::setHoldDuration(uint32_t) {
 }
 
 ButtonComboModule_ButtonComboInfoEx ButtonComboInfoDown::getComboInfoEx() const {
-    return {.type               = mIsObserver ? BUTTON_COMBO_MODULE_TYPE_PRESS_DOWN_OBSERVER : BUTTON_COMBO_MODULE_TYPE_PRESS_DOWN,
+    return {.type               = mIsObserver ? BUTTON_COMBO_MODULE_COMBO_TYPE_PRESS_DOWN_OBSERVER : BUTTON_COMBO_MODULE_COMBO_TYPE_PRESS_DOWN,
             .basicCombo         = {.controllerMask = mControllerMask, .combo = mCombo},
             .optionalHoldForXMs = 0};
 }
