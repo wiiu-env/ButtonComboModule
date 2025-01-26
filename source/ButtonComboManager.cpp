@@ -300,10 +300,10 @@ std::optional<std::shared_ptr<ButtonComboInfoIF>> ButtonComboManager::CreateComb
 
     bool observer = false;
     switch (options.buttonComboOptions.type) {
-        case BUTTON_COMBO_MODULE_TYPE_HOLD_OBSERVER:
+        case BUTTON_COMBO_MODULE_COMBO_TYPE_HOLD_OBSERVER:
             observer = true;
             __attribute__((fallthrough));
-        case BUTTON_COMBO_MODULE_TYPE_HOLD: {
+        case BUTTON_COMBO_MODULE_COMBO_TYPE_HOLD: {
             if (options.buttonComboOptions.optionalHoldForXMs == 0) {
                 err = BUTTON_COMBO_MODULE_ERROR_DURATION_MISSING;
                 return std::nullopt;
@@ -317,10 +317,10 @@ std::optional<std::shared_ptr<ButtonComboInfoIF>> ButtonComboManager::CreateComb
                                                          options.callbackOptions.context,
                                                          observer);
         }
-        case BUTTON_COMBO_MODULE_TYPE_PRESS_DOWN_OBSERVER:
+        case BUTTON_COMBO_MODULE_COMBO_TYPE_PRESS_DOWN_OBSERVER:
             observer = true;
             __attribute__((fallthrough));
-        case BUTTON_COMBO_MODULE_TYPE_PRESS_DOWN: {
+        case BUTTON_COMBO_MODULE_COMBO_TYPE_PRESS_DOWN: {
             err = BUTTON_COMBO_MODULE_ERROR_SUCCESS;
             return std::make_shared<ButtonComboInfoDown>(options.metaOptions.label,
                                                          options.buttonComboOptions.basicCombo.controllerMask,
@@ -329,7 +329,7 @@ std::optional<std::shared_ptr<ButtonComboInfoIF>> ButtonComboManager::CreateComb
                                                          options.callbackOptions.context,
                                                          observer);
         }
-        case BUTTON_COMBO_MODULE_TYPE_INVALID:
+        case BUTTON_COMBO_MODULE_COMBO_TYPE_INVALID:
             break;
     }
     err = BUTTON_COMBO_MODULE_ERROR_INVALID_COMBO_TYPE;
