@@ -5,6 +5,8 @@
 #include <function_patcher/fpatching_defines.h>
 #include <logger.h>
 
+#include <coreinit/cache.h>
+#include <coreinit/time.h>
 #include <padscore/wpad.h>
 #include <vpad/input.h>
 
@@ -18,6 +20,25 @@ DECL_FUNCTION(int32_t, VPADRead, VPADChan chan, VPADStatus *buffer, uint32_t buf
     if (error) {
         *error = real_error;
     }
+
+    if (gTVPressed[chan]) {
+        uint64_t elapsed = OSGetSystemTime() - gTVPressed[chan];
+        if (elapsed > OSMillisecondsToTicks(100) && gTVMenuBlocked[chan]) {
+            OSReport("TV menu unblocked\n");
+            VPADSetTVMenuInvalid(chan, false);
+            gTVMenuBlocked[chan] = false;
+        }
+        if (elapsed > OSMillisecondsToTicks(1000) && !VPADGetTVMenuStatus(chan)) {
+            bool block = gButtonComboManager->hasActiveComboWithTVButton();
+            OSReport("TV timeout reached, setting TV Menu block to %s\n",
+                     block ? "blocked" : "unblocked");
+            VPADSetTVMenuInvalid(chan, block);
+            gTVMenuBlocked[chan] = block;
+            gTVPressed[chan] = 0;
+            OSMemoryBarrier();
+        }
+    }
+
     return result;
 }
 
@@ -37,11 +58,14 @@ struct WUT_PACKED CCRCDCCallbackData {
 DECL_FUNCTION(void, __VPADBASEAttachCallback, CCRCDCCallbackData *data, void *context) {
     real___VPADBASEAttachCallback(data, context);
 
-    if (data && data->attached) {
-        if (gButtonComboManager) {
+    if (data) {
+        if (data->attached && gButtonComboManager) {
             const bool block = gButtonComboManager->hasActiveComboWithTVButton();
             VPADSetTVMenuInvalid(data->chan, block);
+            gTVMenuBlocked[data->chan] = block;
         }
+        gTVPressed[data->chan] = 0;
+        OSMemoryBarrier();
     }
 }
 
