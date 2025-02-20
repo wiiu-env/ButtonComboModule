@@ -1,8 +1,8 @@
-#include "ButtonComboManager.h"
-#include "globals.h"
-#include "export.h"
-#include "logger.h"
 #include "TVOverlayManager.h"
+#include "ButtonComboManager.h"
+#include "export.h"
+#include "globals.h"
+#include "logger.h"
 
 #include <coreinit/cache.h>
 #include <coreinit/debug.h>
@@ -32,18 +32,18 @@ static void TVComboCallback(ButtonComboModule_ControllerTypes triggeredBy,
 }
 
 void registerTVCombo() {
-        ButtonComboModule_ComboOptions opt = {};
-        opt.version = BUTTON_COMBO_MODULE_COMBO_OPTIONS_VERSION;
-        opt.metaOptions.label = "TV remote overlay combo";
-        opt.callbackOptions.callback = TVComboCallback;
-        opt.callbackOptions.context = {};
-        opt.buttonComboOptions.type = BUTTON_COMBO_MODULE_COMBO_TYPE_PRESS_DOWN_OBSERVER;
-        opt.buttonComboOptions.basicCombo.combo = BCMPAD_BUTTON_TV;
-        opt.buttonComboOptions.basicCombo.controllerMask = BUTTON_COMBO_MODULE_CONTROLLER_VPAD;
-        opt.buttonComboOptions.optionalHoldForXMs = 0;
-        if (ButtonComboModule_AddButtonCombo(&opt, &sTVButtonHandle, nullptr) != BUTTON_COMBO_MODULE_ERROR_SUCCESS) {
-            DEBUG_FUNCTION_LINE("FAILED TO SET UP TV COMBO!");
-        }
+    ButtonComboModule_ComboOptions opt               = {};
+    opt.version                                      = BUTTON_COMBO_MODULE_COMBO_OPTIONS_VERSION;
+    opt.metaOptions.label                            = "TV remote overlay combo";
+    opt.callbackOptions.callback                     = TVComboCallback;
+    opt.callbackOptions.context                      = {};
+    opt.buttonComboOptions.type                      = BUTTON_COMBO_MODULE_COMBO_TYPE_PRESS_DOWN_OBSERVER;
+    opt.buttonComboOptions.basicCombo.combo          = BCMPAD_BUTTON_TV;
+    opt.buttonComboOptions.basicCombo.controllerMask = BUTTON_COMBO_MODULE_CONTROLLER_VPAD;
+    opt.buttonComboOptions.optionalHoldForXMs        = 0;
+    if (ButtonComboModule_AddButtonCombo(&opt, &sTVButtonHandle, nullptr) != BUTTON_COMBO_MODULE_ERROR_SUCCESS) {
+        DEBUG_FUNCTION_LINE("FAILED TO SET UP TV COMBO!");
+    }
 }
 
 void unregisterTVCombo() {
@@ -77,7 +77,7 @@ void updateTVStatus(VPADChan channel) {
             //          block ? "blocked" : "unblocked");
             VPADSetTVMenuInvalid(channel, block);
             sTVMenuBlocked[channel] = block;
-            sTVPressed[channel] = 0;
+            sTVPressed[channel]     = 0;
         }
     }
 }

@@ -1,7 +1,7 @@
 #include "ButtonComboInfo.h"
 #include "ButtonComboManager.h"
-#include "globals.h"
 #include "TVOverlayManager.h"
+#include "globals.h"
 
 #include <function_patcher/fpatching_defines.h>
 #include <logger.h>

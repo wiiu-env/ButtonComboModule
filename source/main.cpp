@@ -1,9 +1,9 @@
 #include "ButtonComboManager.h"
-#include "function_patches.h"
+#include "TVOverlayManager.h"
 #include "export.h"
+#include "function_patches.h"
 #include "globals.h"
 #include "logger.h"
-#include "TVOverlayManager.h"
 #include "version.h"
 
 #include <wums.h>
