@@ -6,14 +6,9 @@
 #include "TVOverlayManager.h"
 #include "version.h"
 
-#include <coreinit/cache.h>
-#include <coreinit/time.h>
-#include <vpad/input.h>
-
 #include <wums.h>
 
 #include <function_patcher/function_patching.h>
-#include <buttoncombo/defines.h>
 
 #include <memory>
 
@@ -22,7 +17,6 @@ WUMS_MODULE_SKIP_INIT_FINI();
 WUMS_DEPENDS_ON(homebrew_functionpatcher);
 
 #define MODULE_VERSION "v0.1.0"
-
 
 WUMS_INITIALIZE() {
     initLogging();
