@@ -4,4 +4,4 @@
 std::unique_ptr<ButtonComboManager> gButtonComboManager = {};
 
 OSTime gTVPressed[2];
-bool gTVMenuBlocked[2] = {true, true};
+bool gTVMenuBlocked[2];
