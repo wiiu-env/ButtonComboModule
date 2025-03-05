@@ -1,7 +1,7 @@
+#include "export.h"
 #include "ButtonComboManager.h"
 #include "globals.h"
 
-#include <buttoncombo/defines.h>
 #include <logger.h>
 
 #include <wums/exports.h>

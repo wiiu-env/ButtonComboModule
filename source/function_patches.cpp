@@ -1,5 +1,6 @@
 #include "ButtonComboInfo.h"
 #include "ButtonComboManager.h"
+#include "TVOverlayManager.h"
 #include "globals.h"
 
 #include <function_patcher/fpatching_defines.h>
@@ -18,6 +19,9 @@ DECL_FUNCTION(int32_t, VPADRead, VPADChan chan, VPADStatus *buffer, uint32_t buf
     if (error) {
         *error = real_error;
     }
+
+    updateTVStatus(chan);
+
     return result;
 }
 
@@ -37,10 +41,11 @@ struct WUT_PACKED CCRCDCCallbackData {
 DECL_FUNCTION(void, __VPADBASEAttachCallback, CCRCDCCallbackData *data, void *context) {
     real___VPADBASEAttachCallback(data, context);
 
-    if (data && data->attached) {
-        if (gButtonComboManager) {
-            const bool block = gButtonComboManager->hasActiveComboWithTVButton();
-            VPADSetTVMenuInvalid(data->chan, block);
+    if (data) {
+        if (data->attached && gButtonComboManager) {
+            initTVStatus(data->chan, gButtonComboManager->hasActiveComboWithTVButton());
+        } else {
+            resetTVStatus(data->chan);
         }
     }
 }
