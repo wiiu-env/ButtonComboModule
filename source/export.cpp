@@ -1,5 +1,5 @@
-#include "ButtonComboManager.h"
 #include "export.h"
+#include "ButtonComboManager.h"
 #include "globals.h"
 
 #include <logger.h>
