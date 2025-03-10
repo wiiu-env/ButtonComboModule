@@ -449,7 +449,7 @@ void ButtonComboManager::UpdateInputVPAD(const VPADChan chan, VPADStatus *buffer
         mVPADSuppressed[chan] &= ~buffer[i].release;
         // hide the suppressed buttons
         buffer[i].trigger &= ~mVPADSuppressed[chan];
-        buffer[i].hold    &= ~mVPADSuppressed[chan];
+        buffer[i].hold &= ~mVPADSuppressed[chan];
         buffer[i].release &= ~mVPADSuppressed[chan];
     }
 }
@@ -464,8 +464,8 @@ void ButtonComboManager::UpdateInputWPAD(const WPADChan chan, WPADStatus *data) 
         return;
     }
 
-    auto& coreBtns = mWPADCoreBtns[chan];
-    auto& extBtns  = mWPADExtBtns[chan];
+    auto &coreBtns = mWPADCoreBtns[chan];
+    auto &extBtns  = mWPADExtBtns[chan];
 
     if (mWPADExtension[chan] != data->extensionType) {
         mWPADExtension[chan] = data->extensionType;

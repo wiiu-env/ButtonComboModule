@@ -1,7 +1,7 @@
 #include "ButtonComboInfoDown.h"
 
-#include <ranges>
 #include "logger.h"
+#include <ranges>
 
 ButtonComboInfoDown::ButtonComboInfoDown(
         std::string label,

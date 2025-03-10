@@ -14,7 +14,7 @@ struct ButtonTracker {
     void update(T buttons) noexcept {
         T changed = buttons ^ hold;
         hold      = buttons;
-        trigger   = changed &  buttons;
+        trigger   = changed & buttons;
         release   = changed & ~buttons;
     }
 
@@ -27,7 +27,7 @@ struct ButtonTracker {
     }
 
     template<typename U>
-    void suppressButtons(U& buttons) {
+    void suppressButtons(U &buttons) {
         buttons &= ~suppress;
     }
 
