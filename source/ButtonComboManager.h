@@ -4,6 +4,7 @@
 #include <padscore/wpad.h>
 #include <vpad/input.h>
 
+#include <array>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -12,6 +13,7 @@
 #include <cstdint>
 #include <forward_list>
 
+#include "ButtonTracker.h"
 
 class ButtonComboManager {
 public:
@@ -21,7 +23,7 @@ public:
 
     [[nodiscard]] ButtonComboInfoIF *GetComboInfoForHandle(ButtonComboModule_ComboHandle handle) const;
 
-    void UpdateInputVPAD(VPADChan chan, const VPADStatus *buffer, uint32_t bufferSize, const VPADReadError *error);
+    void UpdateInputVPAD(VPADChan chan, VPADStatus *buffer, uint32_t bufferSize, const VPADReadError *error);
 
     void UpdateInputWPAD(WPADChan chan, WPADStatus *data);
 
@@ -61,4 +63,9 @@ private:
     std::mutex mMutex;
     std::mutex mDetectButtonsMutex;
     bool mInButtonComboDetection = false;
+
+    std::array<uint32_t, 2> mVPADSuppressed{};
+    std::array<ButtonTracker<uint16_t>, 7> mWPADCoreBtns;
+    std::array<ButtonTracker<uint32_t>, 7> mWPADExtBtns;
+    std::array<uint8_t, 7> mWPADExtension{};
 };

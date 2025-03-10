@@ -22,15 +22,17 @@ ButtonComboInfoHold::~ButtonComboInfoHold() {
     DEBUG_FUNCTION_LINE_INFO("Deleted ButtonComboInfoHold: \"%s\", combo: %08X, targetDurationInMs: %d ms, controllerMask: %08X", mLabel.c_str(), mCombo, mTargetDurationInMs, mControllerMask);
 }
 
-void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes controller, const std::span<uint32_t> pressedButtons) {
+int ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes controller, const std::span<uint32_t> pressedButtons) {
     if ((mControllerMask & controller) == 0) {
-        return;
+        return -1;
     }
     const auto chanIndex = ControllerTypeToChanIndex(controller);
     if (chanIndex < 0 || static_cast<uint32_t>(chanIndex) >= std::size(mHoldInformation)) {
         DEBUG_FUNCTION_LINE_WARN("ChanIndex is out of bounds %d", chanIndex);
-        return;
+        return -1;
     }
+
+    int activatedIndex = -1;
 
     auto &holdInformation        = mHoldInformation[chanIndex];
     const auto latestButtonPress = pressedButtons.back();
@@ -53,7 +55,7 @@ void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes co
             if (mCallback != nullptr) {
                 DEBUG_FUNCTION_LINE("Calling callback [%08X](controller: %08X context: %08X) for \"%s\" [handle: %08X], hold %08X for %d ms", mCallback, controller, mContext, mLabel.c_str(), getHandle().handle, mCombo, intervalInMs);
                 mCallback(controller, getHandle(), mContext);
-
+                activatedIndex = pressedButtons.size() - 1;
             } else {
                 DEBUG_FUNCTION_LINE_WARN("Callback was null for combo %08X", getHandle());
             }
@@ -63,6 +65,7 @@ void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes co
         holdInformation.callbackTriggered = false;
         holdInformation.holdStartedAt     = 0;
     }
+    return activatedIndex;
 }
 
 ButtonComboModule_Error ButtonComboInfoHold::setHoldDuration(const uint32_t holdDurationInMs) {

@@ -1,5 +1,6 @@
 #include "ButtonComboInfoDown.h"
 
+#include <ranges>
 #include "logger.h"
 
 ButtonComboInfoDown::ButtonComboInfoDown(
@@ -16,23 +17,24 @@ ButtonComboInfoDown::~ButtonComboInfoDown() {
     DEBUG_FUNCTION_LINE_INFO("Deleted ButtonComboInfoDown: \"%s\", combo: %08X, controllerMask: %08X.  Observer %d", mLabel.c_str(), mCombo, mControllerMask, mIsObserver);
 }
 
-void ButtonComboInfoDown::UpdateInput(
+int ButtonComboInfoDown::UpdateInput(
         const ButtonComboModule_ControllerTypes controller,
         const std::span<uint32_t> pressedButtons) {
     if ((mControllerMask & controller) == 0) {
-        return;
+        return -1;
     }
     const auto chanIndex = ControllerTypeToChanIndex(controller);
     if (chanIndex < 0 || static_cast<uint32_t>(chanIndex) >= std::size(mHoldInformation)) {
         DEBUG_FUNCTION_LINE_WARN("ChanIndex is out of bounds %d", chanIndex);
-        return;
+        return -1;
     }
 
     auto &[prevButtonCombo] = mHoldInformation[chanIndex];
 
     DEBUG_FUNCTION_LINE_VERBOSE("[PRESS DOWN] Check button combo %08X on controller %08X (lastItem im pressedButtons (size %d) is %08X) for %s [%08X]", mCombo, controller, pressedButtons.size(), pressedButtons.back(), mLabel.c_str(), getHandle().handle);
 
-    for (const auto &pressedButton : pressedButtons) {
+    int activatedIndex = -1;
+    for (auto [index, pressedButton] : std::views::enumerate(pressedButtons)) {
         const bool prevButtonsIncludedCombo = (prevButtonCombo & mCombo) == mCombo; // Make sure the combo can't be triggered on releasing
         const bool buttonsPressedChanged    = prevButtonCombo != pressedButton;     // Avoid "holding" the combo
         const bool buttonsPressedMatchCombo = pressedButton == mCombo;              // detect the actual combo
@@ -41,12 +43,14 @@ void ButtonComboInfoDown::UpdateInput(
             if (mCallback != nullptr) {
                 DEBUG_FUNCTION_LINE("Calling callback [%08X](controller: %08X, context: %08X) for \"%s\" [handle: %08X], pressed down %08X", mCallback, controller, mContext, mLabel.c_str(), getHandle().handle, mCombo);
                 mCallback(controller, getHandle(), mContext);
+                activatedIndex = index;
             } else {
                 DEBUG_FUNCTION_LINE_WARN("Callback was null for combo %08X", getHandle());
             }
         }
         prevButtonCombo = pressedButton;
     }
+    return activatedIndex;
 }
 
 ButtonComboModule_Error ButtonComboInfoDown::setHoldDuration(uint32_t) {
