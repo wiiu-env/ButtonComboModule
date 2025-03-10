@@ -465,7 +465,7 @@ void ButtonComboManager::UpdateInputWPAD(const WPADChan chan, WPADStatus *data) 
     }
 
     auto& coreBtns = mWPADCoreBtns[chan];
-    auto& extBtns =  mWPADCoreBtns[chan];
+    auto& extBtns  = mWPADExtBtns[chan];
 
     if (mWPADExtension[chan] != data->extensionType) {
         mWPADExtension[chan] = data->extensionType;
