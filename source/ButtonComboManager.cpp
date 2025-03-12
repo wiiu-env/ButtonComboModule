@@ -436,7 +436,7 @@ void ButtonComboManager::UpdateInputVPAD(const VPADChan chan, VPADStatus *buffer
                 continue;
             }
             int activated = combo->UpdateInput(controller, std::span(mVPADButtonBuffer.data(), usedBufferSize));
-            if (activated >= 0) {
+            if (activated >= 0 && !combo->isObserver()) {
                 // suppress all buttons triggered
                 uint32_t triggered = buffer[usedBufferSize - activated - 1].trigger;
                 mVPADSuppressed[chan] |= triggered;
@@ -527,7 +527,7 @@ void ButtonComboManager::UpdateInputWPAD(const WPADChan chan, WPADStatus *data) 
                     continue;
                 }
                 int activated = combo->UpdateInput(controller, std::span(&pressedButtons, 1));
-                if (activated >= 0) {
+                if (activated >= 0 && !combo->isObserver()) {
                     coreBtns.blockTriggered();
                     extBtns.blockTriggered();
                 }
