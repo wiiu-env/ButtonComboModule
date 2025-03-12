@@ -398,7 +398,7 @@ ButtonComboModule_Error ButtonComboManager::GetButtonComboStatus(const ButtonCom
     return BUTTON_COMBO_MODULE_ERROR_SUCCESS;
 }
 
-void ButtonComboManager::UpdateInputVPAD(const VPADChan chan, const VPADStatus *buffer, const uint32_t bufferSize, const VPADReadError *error) {
+void ButtonComboManager::UpdateInputVPAD(const VPADChan chan, VPADStatus *buffer, const uint32_t bufferSize, const VPADReadError *error) {
     if (chan < VPAD_CHAN_0 || chan > VPAD_CHAN_1) {
         DEBUG_FUNCTION_LINE_ERR("Invalid VPADChan");
         return;
@@ -435,8 +435,22 @@ void ButtonComboManager::UpdateInputVPAD(const VPADChan chan, const VPADStatus *
             if (combo->getStatus() != BUTTON_COMBO_MODULE_COMBO_STATUS_VALID) {
                 continue;
             }
-            combo->UpdateInput(controller, std::span(mVPADButtonBuffer.data(), usedBufferSize));
+            int activated = combo->UpdateInput(controller, std::span(mVPADButtonBuffer.data(), usedBufferSize));
+            if (activated >= 0 && !combo->isObserver()) {
+                // suppress all buttons triggered
+                uint32_t triggered = buffer[usedBufferSize - activated - 1].trigger;
+                mVPADSuppressed[chan] |= triggered;
+            }
         }
+    }
+    // hide all suppressed buttons from the game, iterate from oldest sample to newest
+    for (uint32_t i = bufferSize - 1; i + 1 > 0; --i) {
+        // released buttons stop being suppressed
+        mVPADSuppressed[chan] &= ~buffer[i].release;
+        // hide the suppressed buttons
+        buffer[i].trigger &= ~mVPADSuppressed[chan];
+        buffer[i].hold &= ~mVPADSuppressed[chan];
+        buffer[i].release &= ~mVPADSuppressed[chan];
     }
 }
 
@@ -450,42 +464,99 @@ void ButtonComboManager::UpdateInputWPAD(const WPADChan chan, WPADStatus *data) 
         return;
     }
 
-    // Do not check for combos while the combo detection is active
-    if (mInButtonComboDetection) {
-        return;
-    }
+    auto &coreBtns = mWPADCoreBtns[chan];
+    auto &extBtns  = mWPADExtBtns[chan];
 
-    const auto controller   = convert(chan);
-    uint32_t pressedButtons = {};
+    if (mWPADExtension[chan] != data->extensionType) {
+        mWPADExtension[chan] = data->extensionType;
+        extBtns.reset();
+    }
     switch (data->extensionType) {
         case WPAD_EXT_CORE:
         case WPAD_EXT_NUNCHUK:
         case WPAD_EXT_MPLUS:
-        case WPAD_EXT_MPLUS_NUNCHUK: {
-            pressedButtons = remapWiiMoteButtons(data->buttons);
+        case WPAD_EXT_MPLUS_NUNCHUK:
+            coreBtns.update(data->buttons);
+            extBtns.reset();
             break;
-        }
         case WPAD_EXT_CLASSIC:
         case WPAD_EXT_MPLUS_CLASSIC: {
-            const auto classic = reinterpret_cast<WPADStatusClassic *>(data);
-            pressedButtons     = remapClassicButtons(classic->buttons);
+            auto cdata = reinterpret_cast<WPADStatusClassic *>(data);
+            coreBtns.update(cdata->core.buttons);
+            extBtns.update(cdata->buttons);
             break;
         }
         case WPAD_EXT_PRO_CONTROLLER: {
-            const auto proController = reinterpret_cast<WPADStatusProController *>(data);
-            pressedButtons           = remapProButtons(proController->buttons);
+            auto pdata = reinterpret_cast<WPADStatusProController *>(data);
+            coreBtns.reset();
+            extBtns.update(pdata->buttons);
             break;
         }
-        default:
+        default: // early out when we don't know how to handle extension
             return;
     }
-    {
-        std::lock_guard lock(mMutex);
-        for (const auto &combo : mCombos) {
-            if (combo->getStatus() != BUTTON_COMBO_MODULE_COMBO_STATUS_VALID) {
-                continue;
+
+    // Do not check for combos while the combo detection is active
+    if (!mInButtonComboDetection) {
+        const auto controller   = convert(chan);
+        uint32_t pressedButtons = {};
+        switch (data->extensionType) {
+            case WPAD_EXT_CORE:
+            case WPAD_EXT_NUNCHUK:
+            case WPAD_EXT_MPLUS:
+            case WPAD_EXT_MPLUS_NUNCHUK: {
+                pressedButtons = remapWiiMoteButtons(data->buttons);
+                break;
             }
-            combo->UpdateInput(controller, std::span(&pressedButtons, 1));
+            case WPAD_EXT_CLASSIC:
+            case WPAD_EXT_MPLUS_CLASSIC: {
+                const auto classic = reinterpret_cast<WPADStatusClassic *>(data);
+                pressedButtons     = remapClassicButtons(classic->buttons);
+                break;
+            }
+            case WPAD_EXT_PRO_CONTROLLER: {
+                const auto proController = reinterpret_cast<WPADStatusProController *>(data);
+                pressedButtons           = remapProButtons(proController->buttons);
+                break;
+            }
+        }
+        {
+            std::lock_guard lock(mMutex);
+            for (const auto &combo : mCombos) {
+                if (combo->getStatus() != BUTTON_COMBO_MODULE_COMBO_STATUS_VALID) {
+                    continue;
+                }
+                int activated = combo->UpdateInput(controller, std::span(&pressedButtons, 1));
+                if (activated >= 0 && !combo->isObserver()) {
+                    coreBtns.blockTriggered();
+                    extBtns.blockTriggered();
+                }
+            }
+        }
+    }
+
+    coreBtns.unblockReleased();
+    extBtns.unblockReleased();
+
+    // modify data, to hide all suppressed buttons from the game
+    switch (data->extensionType) {
+        case WPAD_EXT_CORE:
+        case WPAD_EXT_NUNCHUK:
+        case WPAD_EXT_MPLUS:
+        case WPAD_EXT_MPLUS_NUNCHUK:
+            coreBtns.suppressButtons(data->buttons);
+            break;
+        case WPAD_EXT_CLASSIC:
+        case WPAD_EXT_MPLUS_CLASSIC: {
+            auto cdata = reinterpret_cast<WPADStatusClassic *>(data);
+            coreBtns.suppressButtons(cdata->core.buttons);
+            extBtns.suppressButtons(cdata->buttons);
+            break;
+        }
+        case WPAD_EXT_PRO_CONTROLLER: {
+            auto pdata = reinterpret_cast<WPADStatusProController *>(data);
+            extBtns.suppressButtons(pdata->buttons);
+            break;
         }
     }
 }

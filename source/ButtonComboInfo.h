@@ -17,7 +17,8 @@ public:
                       void *context,
                       bool observer);
     virtual ~ButtonComboInfoIF();
-    virtual void UpdateInput(ButtonComboModule_ControllerTypes controller, std::span<uint32_t> pressedButtons) = 0;
+    // Note: return the index of the sample that activated the combo, or -1.
+    virtual int UpdateInput(ButtonComboModule_ControllerTypes controller, std::span<uint32_t> pressedButtons) = 0;
 
     [[nodiscard]] bool isObserver() const;
 
