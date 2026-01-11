@@ -375,7 +375,7 @@ void ButtonComboManager::AddCombo(std::shared_ptr<ButtonComboInfoIF> newComboInf
 ButtonComboModule_Error ButtonComboManager::RemoveCombo(ButtonComboModule_ComboHandle handle) {
     std::lock_guard lock(mMutex);
     if (!remove_first_if(mCombos, [handle](const auto &combo) { return combo->getHandle() == handle; })) {
-        DEBUG_FUNCTION_LINE_WARN("Failed to remove combo by handle %08X", handle);
+        DEBUG_FUNCTION_LINE_WARN("Failed to remove combo by handle %p", handle.handle);
     } else {
         const auto block = hasActiveComboWithTVButton();
 
@@ -603,7 +603,7 @@ ButtonComboModule_Error ButtonComboManager::GetButtonComboInfoEx(const ButtonCom
     std::lock_guard lock(mMutex);
     const auto *comboInfo = GetComboInfoForHandle(handle);
     if (!comboInfo) {
-        DEBUG_FUNCTION_LINE_ERR("ButtonComboModule_GetButtonComboInfo failed to get manager for handle %08X", handle);
+        DEBUG_FUNCTION_LINE_ERR("ButtonComboModule_GetButtonComboInfo failed to get manager for handle %p", handle.handle);
         return BUTTON_COMBO_MODULE_ERROR_INVALID_ARGUMENT;
     }
     outOptions = comboInfo->getComboInfoEx();
@@ -630,7 +630,7 @@ ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const But
     }
 
     if (options.holdComboForInMs == 0 || options.holdAbortForInMs == 0 || options.abortButtonCombo == 0) {
-        DEBUG_FUNCTION_LINE_WARN("Failed to detect button combo: Invalid params. holdComboFor: %s ms, holdAbortFor: %d ms, abortButtonCombo: %08X", options.holdComboForInMs, options.holdAbortForInMs, options.abortButtonCombo);
+        DEBUG_FUNCTION_LINE_WARN("Failed to detect button combo: Invalid params. holdComboFor: %d ms, holdAbortFor: %d ms, abortButtonCombo: %08X", options.holdComboForInMs, options.holdAbortForInMs, options.abortButtonCombo);
         return BUTTON_COMBO_MODULE_ERROR_INVALID_ARGUMENT;
     }
 
