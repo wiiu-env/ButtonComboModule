@@ -55,7 +55,7 @@ void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes co
                 mCallback(controller, getHandle(), mContext);
 
             } else {
-                DEBUG_FUNCTION_LINE_WARN("Callback was null for combo %08X", getHandle());
+                DEBUG_FUNCTION_LINE_WARN("Callback was null for combo %p", getHandle().handle);
             }
             holdInformation.callbackTriggered = true;
         }

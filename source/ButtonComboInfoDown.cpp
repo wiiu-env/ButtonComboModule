@@ -42,7 +42,7 @@ void ButtonComboInfoDown::UpdateInput(
                 DEBUG_FUNCTION_LINE("Calling callback [%08X](controller: %08X, context: %08X) for \"%s\" [handle: %08X], pressed down %08X", mCallback, controller, mContext, mLabel.c_str(), getHandle().handle, mCombo);
                 mCallback(controller, getHandle(), mContext);
             } else {
-                DEBUG_FUNCTION_LINE_WARN("Callback was null for combo %08X", getHandle());
+                DEBUG_FUNCTION_LINE_WARN("Callback was null for combo %p", getHandle().handle);
             }
         }
         prevButtonCombo = pressedButton;
