@@ -19,16 +19,12 @@ public:
 
     static std::optional<std::shared_ptr<ButtonComboInfoIF>> CreateComboInfo(const ButtonComboModule_ComboOptions &options, ButtonComboModule_Error &err);
 
-    [[nodiscard]] ButtonComboInfoIF *GetComboInfoForHandle(ButtonComboModule_ComboHandle handle) const;
-
     void UpdateInputVPAD(VPADChan chan, const VPADStatus *buffer, uint32_t bufferSize, const VPADReadError *error);
     void UpdateTVMenuBlocking();
 
     void UpdateInputWPAD(WPADChan chan, WPADStatus *data);
 
     bool hasActiveComboWithTVButton();
-
-    ButtonComboModule_ComboStatus CheckComboStatus(const ButtonComboInfoIF &other);
 
     void AddCombo(std::shared_ptr<ButtonComboInfoIF> newComboInfo, ButtonComboModule_ComboHandle &outHandle, ButtonComboModule_ComboStatus &outStatus);
 
@@ -57,6 +53,10 @@ public:
     ButtonComboModule_Error DetectButtonCombo_Blocking(const ButtonComboModule_DetectButtonComboOptions &options, ButtonComboModule_Buttons &outButtonCombo);
 
 private:
+    [[nodiscard]] ButtonComboInfoIF *GetComboInfoForHandle(ButtonComboModule_ComboHandle handle) const;
+
+    ButtonComboModule_ComboStatus CheckComboStatus(const ButtonComboInfoIF &other);
+
     std::forward_list<std::shared_ptr<ButtonComboInfoIF>> mCombos;
     std::vector<uint32_t> mVPADButtonBuffer;
     mutable std::recursive_mutex mMutex;
