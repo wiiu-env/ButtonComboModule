@@ -491,6 +491,7 @@ void ButtonComboManager::UpdateInputWPAD(const WPADChan chan, WPADStatus *data) 
 }
 
 ButtonComboInfoIF *ButtonComboManager::GetComboInfoForHandle(const ButtonComboModule_ComboHandle handle) const {
+    std::lock_guard lock(mMutex);
     for (const auto &combo : mCombos) {
         if (combo->getHandle() == handle) {
             return combo.get();
