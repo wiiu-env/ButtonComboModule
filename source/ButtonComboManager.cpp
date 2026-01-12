@@ -9,6 +9,7 @@
 #include <padscore/kpad.h>
 
 #include <algorithm>
+#include <span>
 #include <vector>
 
 namespace {
@@ -367,9 +368,7 @@ void ButtonComboManager::AddCombo(std::shared_ptr<ButtonComboInfoIF> newComboInf
     outHandle = newComboInfo->getHandle();
     mCombos.emplace_front(std::move(newComboInfo));
 
-    const auto block = hasActiveComboWithTVButton();
-    VPADSetTVMenuInvalid(VPAD_CHAN_0, block);
-    VPADSetTVMenuInvalid(VPAD_CHAN_1, block);
+    UpdateTVMenuBlocking();
 }
 
 ButtonComboModule_Error ButtonComboManager::RemoveCombo(ButtonComboModule_ComboHandle handle) {
@@ -377,10 +376,7 @@ ButtonComboModule_Error ButtonComboManager::RemoveCombo(ButtonComboModule_ComboH
     if (!remove_first_if(mCombos, [handle](const auto &combo) { return combo->getHandle() == handle; })) {
         DEBUG_FUNCTION_LINE_WARN("Failed to remove combo by handle %p", handle.handle);
     } else {
-        const auto block = hasActiveComboWithTVButton();
-
-        VPADSetTVMenuInvalid(VPAD_CHAN_0, block);
-        VPADSetTVMenuInvalid(VPAD_CHAN_1, block);
+        UpdateTVMenuBlocking();
     }
 
     return BUTTON_COMBO_MODULE_ERROR_SUCCESS;
@@ -436,6 +432,12 @@ void ButtonComboManager::UpdateInputVPAD(const VPADChan chan, const VPADStatus *
                 continue;
             }
             combo->UpdateInput(controller, std::span(mVPADButtonBuffer.data(), usedBufferSize));
+
+void ButtonComboManager::UpdateTVMenuBlocking() {
+    const auto block = hasActiveComboWithTVButton();
+    VPADSetTVMenuInvalid(VPAD_CHAN_0, block);
+    VPADSetTVMenuInvalid(VPAD_CHAN_1, block);
+}
         }
     }
 }
@@ -555,9 +557,7 @@ ButtonComboModule_Error ButtonComboManager::UpdateButtonCombo(const ButtonComboM
     comboInfo->setStatus(CheckComboStatus(*comboInfo));
     outComboStatus = comboInfo->getStatus();
 
-    const auto block = hasActiveComboWithTVButton();
-    VPADSetTVMenuInvalid(VPAD_CHAN_0, block);
-    VPADSetTVMenuInvalid(VPAD_CHAN_1, block);
+    UpdateTVMenuBlocking();
 
     return BUTTON_COMBO_MODULE_ERROR_SUCCESS;
 }
