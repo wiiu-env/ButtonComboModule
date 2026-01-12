@@ -1,7 +1,7 @@
-FROM ghcr.io/wiiu-env/devkitppc:20250608
+FROM ghcr.io/wiiu-env/devkitppc:20260225
 
-COPY --from=ghcr.io/wiiu-env/libbuttoncombo:20250125-cb22627 /artifacts $DEVKITPRO
-COPY --from=ghcr.io/wiiu-env/libfunctionpatcher:20241012 /artifacts $DEVKITPRO
-COPY --from=ghcr.io/wiiu-env/wiiumodulesystem:20240424 /artifacts $DEVKITPRO
+COPY --from=ghcr.io/wiiu-env/libbuttoncombo:20260112-e8efe9d /artifacts $DEVKITPRO
+COPY --from=ghcr.io/wiiu-env/libfunctionpatcher:20260208 /artifacts $DEVKITPRO
+COPY --from=ghcr.io/wiiu-env/wiiumodulesystem:20260225 /artifacts $DEVKITPRO
 
 WORKDIR /project
