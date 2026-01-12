@@ -2,4 +2,4 @@
 
 class ButtonComboManager;
 
-extern std::unique_ptr<ButtonComboManager> gButtonComboManager;
+extern std::shared_ptr<ButtonComboManager> gButtonComboManager;
