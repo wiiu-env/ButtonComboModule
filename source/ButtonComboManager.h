@@ -22,6 +22,7 @@ public:
     [[nodiscard]] ButtonComboInfoIF *GetComboInfoForHandle(ButtonComboModule_ComboHandle handle) const;
 
     void UpdateInputVPAD(VPADChan chan, const VPADStatus *buffer, uint32_t bufferSize, const VPADReadError *error);
+    void UpdateTVMenuBlocking();
 
     void UpdateInputWPAD(WPADChan chan, WPADStatus *data);
 
