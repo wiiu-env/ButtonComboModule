@@ -55,9 +55,13 @@ public:
 private:
     [[nodiscard]] ButtonComboInfoIF *GetComboInfoForHandle(ButtonComboModule_ComboHandle handle) const;
 
+    void UpdateInputsLocked(ButtonComboModule_ControllerTypes controller, std::span<uint32_t> pressedButtons);
+
     ButtonComboModule_ComboStatus CheckComboStatus(const ButtonComboInfoIF &other);
 
     std::forward_list<std::shared_ptr<ButtonComboInfoIF>> mCombos;
+    std::vector<ButtonComboModule_ComboHandle> mCombosToRemove;
+    int mIsIterating = 0;
     std::vector<uint32_t> mVPADButtonBuffer;
     mutable std::recursive_mutex mMutex;
     std::recursive_mutex mDetectButtonsMutex;

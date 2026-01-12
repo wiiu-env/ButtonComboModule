@@ -373,6 +373,12 @@ void ButtonComboManager::AddCombo(std::shared_ptr<ButtonComboInfoIF> newComboInf
 
 ButtonComboModule_Error ButtonComboManager::RemoveCombo(ButtonComboModule_ComboHandle handle) {
     std::lock_guard lock(mMutex);
+
+    if (mIsIterating) {
+        mCombosToRemove.push_back(handle);
+        return BUTTON_COMBO_MODULE_ERROR_SUCCESS;
+    }
+
     if (!remove_first_if(mCombos, [handle](const auto &combo) { return combo->getHandle() == handle; })) {
         DEBUG_FUNCTION_LINE_WARN("Failed to remove combo by handle %p", handle.handle);
     } else {
@@ -427,18 +433,36 @@ void ButtonComboManager::UpdateInputVPAD(const VPADChan chan, const VPADStatus *
             mVPADButtonBuffer[usedBufferSize - i - 1] = remapVPADButtons(buffer[i].hold);
         }
 
-        for (const auto &combo : mCombos) {
-            if (combo->getStatus() != BUTTON_COMBO_MODULE_COMBO_STATUS_VALID) {
-                continue;
-            }
-            combo->UpdateInput(controller, std::span(mVPADButtonBuffer.data(), usedBufferSize));
+        UpdateInputsLocked(controller, std::span(mVPADButtonBuffer.data(), usedBufferSize));
+    }
+}
 
 void ButtonComboManager::UpdateTVMenuBlocking() {
     const auto block = hasActiveComboWithTVButton();
     VPADSetTVMenuInvalid(VPAD_CHAN_0, block);
     VPADSetTVMenuInvalid(VPAD_CHAN_1, block);
 }
+
+void ButtonComboManager::UpdateInputsLocked(const ButtonComboModule_ControllerTypes controller, const std::span<uint32_t> pressedButtons) {
+    std::lock_guard lock(mMutex);
+    mIsIterating++;
+    for (const auto &combo : mCombos) {
+        if (combo->getStatus() != BUTTON_COMBO_MODULE_COMBO_STATUS_VALID) {
+            continue;
         }
+        combo->UpdateInput(controller, pressedButtons);
+    }
+    mIsIterating--;
+
+    // Remove pending removals if existing
+    if (mIsIterating == 0 && !mCombosToRemove.empty()) {
+        for (auto handle : mCombosToRemove) {
+            remove_first_if(mCombos, [handle](const auto &combo) { return combo->getHandle() == handle; });
+        }
+        mCombosToRemove.clear();
+
+        // Update TV Menu blocking status once after all removals
+        UpdateTVMenuBlocking();
     }
 }
 
@@ -481,15 +505,8 @@ void ButtonComboManager::UpdateInputWPAD(const WPADChan chan, WPADStatus *data) 
         default:
             return;
     }
-    {
-        std::lock_guard lock(mMutex);
-        for (const auto &combo : mCombos) {
-            if (combo->getStatus() != BUTTON_COMBO_MODULE_COMBO_STATUS_VALID) {
-                continue;
-            }
-            combo->UpdateInput(controller, std::span(&pressedButtons, 1));
-        }
-    }
+
+    UpdateInputsLocked(controller, std::span(&pressedButtons, 1));
 }
 
 ButtonComboInfoIF *ButtonComboManager::GetComboInfoForHandle(const ButtonComboModule_ComboHandle handle) const {
