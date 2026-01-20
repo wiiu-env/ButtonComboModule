@@ -35,7 +35,7 @@ void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes co
     auto &holdInformation        = mHoldInformation[chanIndex];
     const auto latestButtonPress = pressedButtons.back();
 
-    DEBUG_FUNCTION_LINE_VERBOSE("[HOLD      ] Check button combo %08X on controller %08X (lastItem im pressedButtons (size %d) is %08X) for %s [%08X]", mCombo, controller, pressedButtons.size(), latestButtonPress, mLabel.c_str(), getHandle().handle);
+    DEBUG_FUNCTION_LINE_VERBOSE("[HOLD      ] Check button combo %08X on controller %08X (lastItem im pressedButtons (size %d) is %08X) for %s [%p]", mCombo, controller, pressedButtons.size(), latestButtonPress, mLabel.c_str(), getHandle().handle);
 
     const bool prevButtonsIncludedCombo = (holdInformation.prevButtonCombo & mCombo) == mCombo; // Make sure the combo can't be triggered on releasing
     const bool buttonsPressedChanged    = holdInformation.prevButtonCombo != latestButtonPress; // Avoid "holding" the combo
@@ -51,7 +51,7 @@ void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes co
 
         if (intervalInMs > mTargetDurationInMs && !holdInformation.callbackTriggered) {
             if (mCallback != nullptr) {
-                DEBUG_FUNCTION_LINE("Calling callback [%08X](controller: %08X context: %08X) for \"%s\" [handle: %08X], hold %08X for %d ms", mCallback, controller, mContext, mLabel.c_str(), getHandle().handle, mCombo, intervalInMs);
+                DEBUG_FUNCTION_LINE("Calling callback [%p](controller: %08X context: %p) for \"%s\" [handle: %p], hold %08X for %d ms", mCallback, controller, mContext, mLabel.c_str(), getHandle().handle, mCombo, intervalInMs);
                 mCallback(controller, getHandle(), mContext);
 
             } else {
@@ -66,7 +66,7 @@ void ButtonComboInfoHold::UpdateInput(const ButtonComboModule_ControllerTypes co
 }
 
 ButtonComboModule_Error ButtonComboInfoHold::setHoldDuration(const uint32_t holdDurationInMs) {
-    DEBUG_FUNCTION_LINE("Setting holdDurationInMs to %d for %s [%08X]", holdDurationInMs, mLabel.c_str(), getHandle().handle);
+    DEBUG_FUNCTION_LINE("Setting holdDurationInMs to %d for %s [%p]", holdDurationInMs, mLabel.c_str(), getHandle().handle);
     mTargetDurationInMs = holdDurationInMs;
     return BUTTON_COMBO_MODULE_ERROR_SUCCESS;
 }
