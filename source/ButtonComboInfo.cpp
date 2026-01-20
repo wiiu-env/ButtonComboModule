@@ -42,7 +42,7 @@ bool ButtonComboInfoIF::getMetaOptions(const ButtonComboModule_MetaOptionsOut &o
 
 void ButtonComboInfoIF::setMetaOptions(const ButtonComboModule_MetaOptions options) {
     mLabel = options.label;
-    DEBUG_FUNCTION_LINE("Updated label to: \"%s\", for %08X", mLabel.c_str(), getHandle().handle);
+    DEBUG_FUNCTION_LINE("Updated label to: \"%s\", for %p", mLabel.c_str(), getHandle().handle);
 }
 
 ButtonComboModule_CallbackOptions ButtonComboInfoIF::getCallbackOptions() const {
@@ -52,7 +52,7 @@ ButtonComboModule_CallbackOptions ButtonComboInfoIF::getCallbackOptions() const 
 void ButtonComboInfoIF::setCallbackOptions(const ButtonComboModule_CallbackOptions options) {
     mCallback = options.callback;
     mContext  = options.context;
-    DEBUG_FUNCTION_LINE("Updated callback to: %08X(%08X), for %s %08X", mCallback, mContext, mLabel.c_str(), getHandle().handle);
+    DEBUG_FUNCTION_LINE("Updated callback to: %p(%p), for %s handle: %p", mCallback, mContext, mLabel.c_str(), getHandle().handle);
 }
 
 uint32_t ButtonComboInfoIF::getCombo() const {
@@ -60,7 +60,7 @@ uint32_t ButtonComboInfoIF::getCombo() const {
 }
 void ButtonComboInfoIF::setCombo(const ButtonComboModule_Buttons combo) {
     mCombo = combo;
-    DEBUG_FUNCTION_LINE("Updated combo to: %08X, for %s %08X", mCombo, mLabel.c_str(), getHandle().handle);
+    DEBUG_FUNCTION_LINE("Updated combo to: %08X, for %s handle: %p", mCombo, mLabel.c_str(), getHandle().handle);
     resetPrevInput();
 }
 
@@ -70,7 +70,7 @@ ButtonComboModule_ComboStatus ButtonComboInfoIF::getStatus() const {
 
 void ButtonComboInfoIF::setStatus(const ButtonComboModule_ComboStatus status) {
     mStatus = status;
-    DEBUG_FUNCTION_LINE("Updated status to: %08X, for %s %08X", mStatus, mLabel.c_str(), getHandle().handle);
+    DEBUG_FUNCTION_LINE("Updated status to: %08X, for %s handle: %p", mStatus, mLabel.c_str(), getHandle().handle);
 }
 
 ButtonComboModule_ControllerTypes ButtonComboInfoIF::getControllerMask() const {
@@ -79,7 +79,7 @@ ButtonComboModule_ControllerTypes ButtonComboInfoIF::getControllerMask() const {
 
 void ButtonComboInfoIF::setControllerMask(const ButtonComboModule_ControllerTypes mask) {
     mControllerMask = mask;
-    DEBUG_FUNCTION_LINE("Updated controllerMask to: %08X, for %s %08X", mControllerMask, mLabel.c_str(), getHandle().handle);
+    DEBUG_FUNCTION_LINE("Updated controllerMask to: %08X, for %s handle: %p", mControllerMask, mLabel.c_str(), getHandle().handle);
     resetPrevInput();
 }
 
