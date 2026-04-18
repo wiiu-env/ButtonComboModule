@@ -14,7 +14,7 @@ WUMS_MODULE_EXPORT_NAME("homebrew_buttoncombo");
 WUMS_MODULE_SKIP_INIT_FINI();
 WUMS_DEPENDS_ON(homebrew_functionpatcher);
 
-#define MODULE_VERSION "v0.1.0"
+#define MODULE_VERSION "v0.2.0"
 
 WUMS_INITIALIZE() {
     initLogging();
