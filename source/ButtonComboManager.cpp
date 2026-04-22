@@ -289,11 +289,6 @@ std::optional<std::shared_ptr<ButtonComboInfoIF>> ButtonComboManager::CreateComb
         err = BUTTON_COMBO_MODULE_ERROR_INCOMPATIBLE_OPTIONS_VERSION;
         return std::nullopt;
     }
-    if (options.buttonComboOptions.basicCombo.combo == 0 ||
-        options.buttonComboOptions.basicCombo.controllerMask == BUTTON_COMBO_MODULE_CONTROLLER_NONE) {
-        err = BUTTON_COMBO_MODULE_ERROR_INVALID_COMBO;
-        return std::nullopt;
-    }
     if (options.callbackOptions.callback == nullptr) {
         err = BUTTON_COMBO_MODULE_ERROR_INVALID_ARGUMENT;
         return std::nullopt;
@@ -303,7 +298,7 @@ std::optional<std::shared_ptr<ButtonComboInfoIF>> ButtonComboManager::CreateComb
     switch (options.buttonComboOptions.type) {
         case BUTTON_COMBO_MODULE_COMBO_TYPE_HOLD_OBSERVER:
             observer = true;
-            __attribute__((fallthrough));
+            [[fallthrough]];
         case BUTTON_COMBO_MODULE_COMBO_TYPE_HOLD: {
             if (options.buttonComboOptions.optionalHoldForXMs == 0) {
                 err = BUTTON_COMBO_MODULE_ERROR_DURATION_MISSING;
@@ -320,7 +315,7 @@ std::optional<std::shared_ptr<ButtonComboInfoIF>> ButtonComboManager::CreateComb
         }
         case BUTTON_COMBO_MODULE_COMBO_TYPE_PRESS_DOWN_OBSERVER:
             observer = true;
-            __attribute__((fallthrough));
+            [[fallthrough]];
         case BUTTON_COMBO_MODULE_COMBO_TYPE_PRESS_DOWN: {
             err = BUTTON_COMBO_MODULE_ERROR_SUCCESS;
             return std::make_shared<ButtonComboInfoDown>(options.metaOptions.label,

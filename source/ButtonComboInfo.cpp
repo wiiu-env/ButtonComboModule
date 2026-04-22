@@ -97,6 +97,12 @@ bool ButtonComboInfoIF::conflictsWith(const ButtonComboModule_ButtonComboOptions
     if ((mControllerMask & other.controllerMask) == 0) {
         return false;
     }
+
+    // No conflicts when either button combo is empty.
+    if (!other.combo || !mCombo) {
+        return false;
+    }
+
     if ((other.combo & mCombo) == mCombo || (other.combo & mCombo) == other.combo) {
         return true;
     }
