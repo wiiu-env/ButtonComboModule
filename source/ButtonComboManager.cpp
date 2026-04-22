@@ -744,7 +744,7 @@ ButtonComboModule_Error ButtonComboManager::DetectButtonCombo_Blocking(const But
         }
 
         if (holdFor >= holdForTarget) {
-            DEBUG_FUNCTION_LINE_INFO("Detected button combo %08X", lastHold);
+            DEBUG_FUNCTION_LINE("Detected button combo %08X", lastHold);
             outButtonCombo = static_cast<ButtonComboModule_Buttons>(lastHold);
             result         = BUTTON_COMBO_MODULE_ERROR_SUCCESS;
             break;
