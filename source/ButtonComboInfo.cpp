@@ -99,7 +99,7 @@ bool ButtonComboInfoIF::conflictsWith(const ButtonComboModule_ButtonComboOptions
     }
 
     // No conflicts when either button combo is empty.
-    if (!other.combo || !mCombo) {
+    if (other.combo == 0 || mCombo == 0) {
         return false;
     }
 
