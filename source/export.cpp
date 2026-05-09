@@ -1,3 +1,4 @@
+#include "export.h"
 #include "ButtonComboManager.h"
 #include "globals.h"
 
