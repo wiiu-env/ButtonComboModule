@@ -4,14 +4,17 @@
 #include <padscore/wpad.h>
 #include <vpad/input.h>
 
+#include <array>
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <span>
 #include <vector>
 
 #include <cstdint>
 #include <forward_list>
 
+#include "ButtonTracker.h"
 
 class ButtonComboManager {
 public:
@@ -19,7 +22,7 @@ public:
 
     static std::optional<std::shared_ptr<ButtonComboInfoIF>> CreateComboInfo(const ButtonComboModule_ComboOptions &options, ButtonComboModule_Error &err);
 
-    void UpdateInputVPAD(VPADChan chan, const VPADStatus *buffer, uint32_t bufferSize, const VPADReadError *error);
+    void UpdateInputVPAD(VPADChan chan, std::span<VPADStatus> buffer, const VPADReadError *error);
     void UpdateTVMenuBlocking();
 
     void UpdateInputWPAD(WPADChan chan, WPADStatus *data);
@@ -55,7 +58,7 @@ public:
 private:
     [[nodiscard]] ButtonComboInfoIF *GetComboInfoForHandle(ButtonComboModule_ComboHandle handle) const;
 
-    void UpdateInputsLocked(ButtonComboModule_ControllerTypes controller, std::span<uint32_t> pressedButtons);
+    int UpdateInputsLocked(ButtonComboModule_ControllerTypes controller, std::span<uint32_t> pressedButtons);
 
     ButtonComboModule_ComboStatus CheckComboStatus(const ButtonComboInfoIF &other);
 
@@ -66,4 +69,8 @@ private:
     mutable std::recursive_mutex mMutex;
     std::recursive_mutex mDetectButtonsMutex;
     bool mInButtonComboDetection = false;
+
+    std::array<uint32_t, 2> mVPADSuppressed{};
+    std::array<ButtonTracker<uint16_t>, 7> mWPADCoreBtns;
+    std::array<ButtonTracker<uint32_t>, 7> mWPADExtBtns;
 };

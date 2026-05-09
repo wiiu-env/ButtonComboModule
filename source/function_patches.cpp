@@ -14,7 +14,7 @@ DECL_FUNCTION(int32_t, VPADRead, VPADChan chan, VPADStatus *buffer, uint32_t buf
 
     if (result > 0 && real_error == VPAD_READ_SUCCESS) {
         if (const auto comboManager = gButtonComboManager; comboManager) {
-            comboManager->UpdateInputVPAD(chan, buffer, result > static_cast<int32_t>(buffer_size) ? buffer_size : result, error);
+            comboManager->UpdateInputVPAD(chan, std::span(buffer, result), error);
         }
     }
     if (error) {

@@ -23,7 +23,7 @@ private:
         uint32_t prevButtonCombo;
     } HoldInformation;
 
-    void UpdateInput(ButtonComboModule_ControllerTypes controller, std::span<uint32_t> pressedButtons) override;
+    int UpdateInput(ButtonComboModule_ControllerTypes controller, std::span<uint32_t> pressedButtons) override;
 
     ButtonComboModule_Error setHoldDuration(uint32_t uint32) override;
 

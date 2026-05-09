@@ -25,7 +25,7 @@ public:
     ~ButtonComboInfoHold() override;
 
 private:
-    void UpdateInput(ButtonComboModule_ControllerTypes controller, std::span<uint32_t> pressedButtons) override;
+    int UpdateInput(ButtonComboModule_ControllerTypes controller, std::span<uint32_t> pressedButtons) override;
 
     ButtonComboModule_Error setHoldDuration(uint32_t holdDurationInMs) override;
 
